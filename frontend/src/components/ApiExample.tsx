@@ -10,7 +10,7 @@ const ApiExample: React.FC = () => {
     const handleGet = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/api/ejemplo');
+            const response = await axios.get('/api/ejemplo');
             setData(response.data);
             setError('');
         } catch (err) {
@@ -25,7 +25,7 @@ const ApiExample: React.FC = () => {
     const handlePost = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:8000/api/ejemplo', {
+            const response = await axios.post('/api/ejemplo', {
                 // Datos de ejemplo
                 campo1: 'valor1',
                 campo2: 'valor2'
