@@ -39,8 +39,21 @@ cd frontend
 # Instalar dependencias
 npm install
 
-# Iniciar servidor de desarrollo
-npm run dev
+# Configurar vite.config.ts
+# Asegúrate de que el archivo vite.config.ts tenga esta configuración:
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: '../public/dist',
+    emptyOutDir: true
+  }
+})
+
+# Compilar el frontend
+npm run build
 ```
 
 ### 3. Configurar Apache
