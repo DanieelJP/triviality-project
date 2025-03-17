@@ -1,6 +1,106 @@
 # Triviality Project
 
-Proyecto de trivia desarrollado con Laravel (backend) y React (frontend).
+## Comandos para Iniciar el Proyecto
+
+### 1. Backend (Laravel)
+```bash
+# Instalar dependencias
+composer install
+
+# Configurar entorno
+cp .env.example .env
+php artisan key:generate
+
+# Configurar base de datos en .env
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=triviality
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Crear base de datos
+mysql -u root -p
+CREATE DATABASE triviality;
+exit;
+
+# Migrar base de datos
+php artisan migrate
+
+# Iniciar servidor Laravel
+php artisan serve
+```
+
+### 2. Frontend (React)
+```bash
+# Entrar al directorio frontend
+cd frontend
+
+# Instalar dependencias
+npm install
+
+# Configurar vite.config.ts
+# Asegúrate de que el archivo vite.config.ts tenga esta configuración:
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: '../public/dist',
+    emptyOutDir: true
+  }
+})
+
+# Compilar el frontend
+npm run build
+```
+
+### 3. Configurar Apache
+```bash
+# Habilitar módulos
+sudo a2enmod proxy proxy_http rewrite headers
+
+# Crear virtual host
+sudo nano /etc/apache2/sites-available/triviality.conf
+
+# Añadir configuración:
+<VirtualHost *:80>
+    ServerName triviality.local
+    DocumentRoot /var/www/html/triviality-project/public
+
+    ProxyPass /api http://localhost:8000/api
+    ProxyPassReverse /api http://localhost:8000/api
+
+    <Directory /var/www/html/triviality-project/public>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Habilitar sitio y reiniciar Apache
+sudo a2ensite triviality.conf
+sudo systemctl restart apache2
+```
+
+### 4. Configurar Hosts
+```bash
+# Añadir dominio local
+sudo nano /etc/hosts
+# Añadir: 127.0.0.1 triviality.local
+```
+
+### 5. Dar Permisos
+```bash
+sudo chown -R www-data:www-data /var/www/html/triviality-project
+sudo chmod -R 755 /var/www/html/triviality-project
+```
+
+## Verificar Instalación
+
+1. Backend: http://localhost:8000/api/ejemplo
+2. Frontend: http://triviality.local
 
 ## Requisitos Previos
 
@@ -167,7 +267,5 @@ sudo systemctl status apache2
 sudo tail -f /var/log/apache2/error.log
 ```
 
-# Triviality 🎲  
 
-¡Pon a prueba tu conocimiento con *Triviality*! Un juego de trivia dinámico con preguntas de diversas categorías.  
 
