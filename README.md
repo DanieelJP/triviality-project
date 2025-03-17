@@ -153,9 +153,6 @@ mysql -u root -p
 CREATE DATABASE triviality;
 exit;
 
-# Ejecutar migraciones
-php artisan migrate
-
 # Iniciar el servidor de Laravel
 php artisan serve
 ```
