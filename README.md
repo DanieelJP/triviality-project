@@ -167,7 +167,7 @@ cd frontend
 npm install
 
 # Iniciar el servidor de desarrollo
-npm run dev
+npm run build
 ```
 
 ### 3. Configuración de Apache
