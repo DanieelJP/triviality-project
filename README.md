@@ -15,12 +15,12 @@ php artisan key:generate
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
-# DB_DATABASE=triviality
-# DB_USERNAME=root
-# DB_PASSWORD=
+# DB_DATABASE=triviality_db
+# DB_USERNAME=laraveluser
+# DB_PASSWORD=Bifidus42
 
 # Crear base de datos
-mysql -u root -p
+mysql -u laraveluser -p
 CREATE DATABASE triviality;
 exit;
 
@@ -28,6 +28,7 @@ exit;
 php artisan migrate
 
 # Iniciar servidor Laravel
+cd backend
 php artisan serve
 ```
 
