@@ -70,8 +70,8 @@ const TriviaGame: React.FC = () => {
         setQuestions([]);
     };
 
-    const renderLogo = () => (
-        <div className="logo-container">
+    const renderLogo = (inGame: boolean = false) => (
+        <div className={`logo-container ${inGame ? 'in-game' : ''}`}>
             <img src={logo} alt="Triviality Logo" className="logo-image" />
         </div>
     );
@@ -185,7 +185,7 @@ const TriviaGame: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {renderLogo()}
+            {renderLogo(true)}
         </>
     );
 };
