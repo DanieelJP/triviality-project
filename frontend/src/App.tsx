@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
-import ApiExample from './components/ApiExample';
+import TriviaGame from './components/TriviaGame';
 
 function App() {
   return (
     <div className="App">
-      <ApiExample />
+      <main>
+        <TriviaGame />
+      </main>
     </div>
   );
 }
