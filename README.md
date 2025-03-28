@@ -31,12 +31,18 @@ php artisan key:generate
 # DB_PORT=3306
 # DB_DATABASE=triviality_db
 # DB_USERNAME=laraveluser
-# DB_PASSWORD=tu_contraseña
+# DB_PASSWORD=Bifidus42
+
+# Crear base de datos
+mysql -u laraveluser -p
+CREATE DATABASE triviality;
+exit;
 
 # Migrar base de datos
 php artisan migrate
 
 # Iniciar servidor Laravel
+cd backend
 php artisan serve
 ```
 
@@ -147,32 +153,6 @@ Verifica que:
 - Apache está configurado correctamente
 - Estás accediendo a http://triviality.local
 
-### Errores de conexión con la API
-Verifica que:
-- Backend está corriendo en el puerto 8000
-- Configuraciones de proxy en Apache son correctas
-- Campo "proxy" en package.json está configurado
-
-### Problemas de permisos
-```bash
-sudo chown -R $USER:www-data /var/www/html/triviality-project
-sudo chmod -R 775 /var/www/html/triviality-project
-```
-
-## Estructura del Proyecto
-```
-triviality-project/
-├── backend/               # Código del backend Laravel
-│   ├── app/              # Lógica de la aplicación
-│   ├── routes/           # Definición de rutas API
-│   └── ...
-├── frontend/             # Código del frontend React
-│   ├── src/              # Código fuente
-│   │   ├── components/   # Componentes React
-│   ├── build/            # Versión compilada (producción)
-│   └── ...
-```
-
 ## Tecnologías Utilizadas
 
 - **Backend**: Laravel, PHP, MySQL
@@ -196,7 +176,7 @@ triviality-project/
 ├── app/                    # Código de la aplicación Laravel
 ├── config/                 # Archivos de configuración
 ├── database/              # Migraciones y seeders
-├── frontend/              # Aplicación React
+├── frontend/           Verificar   # Aplicación React
 │   ├── src/
 │   │   ├── components/   # Componentes React
 │   │   └── App.tsx       # Componente principal
