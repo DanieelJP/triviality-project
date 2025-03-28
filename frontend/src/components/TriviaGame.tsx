@@ -23,6 +23,9 @@ const TriviaGame: React.FC = () => {
     const [error, setError] = useState<string>('');
     const [gameStarted, setGameStarted] = useState<boolean>(false);
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium');
+    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
+    const [scoreUpdated, setScoreUpdated] = useState<boolean>(false);
 
     const fetchQuestions = async () => {
         try {
@@ -48,11 +51,22 @@ const TriviaGame: React.FC = () => {
         }
     };
 
-    const handleAnswer = (answer: string) => {
+    const handleAnswer = async (answer: string) => {
+        setSelectedAnswer(answer);
         const isCorrect = answer === questions[currentQuestion].correct_answer;
+        setIsAnswerCorrect(isCorrect);
+
         if (isCorrect) {
             setScore(score + 1);
+            setScoreUpdated(true);
+            setTimeout(() => setScoreUpdated(false), 500);
         }
+
+        // Esperar un momento para mostrar la respuesta correcta
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        setSelectedAnswer(null);
+        setIsAnswerCorrect(null);
 
         const nextQuestion = currentQuestion + 1;
         if (nextQuestion < questions.length) {
@@ -160,7 +174,7 @@ const TriviaGame: React.FC = () => {
                         <span className="question-counter">
                             Pregunta {currentQuestion + 1} de {questions.length}
                         </span>
-                        <span className="score-counter">
+                        <span className={`score-counter ${scoreUpdated ? 'score-updated' : ''}`}>
                             Puntuación: {score}
                         </span>
                     </div>
@@ -174,14 +188,25 @@ const TriviaGame: React.FC = () => {
                     </div>
                     <h2 className="question-text" dangerouslySetInnerHTML={{ __html: currentQ.question }}></h2>
                     <div className="answers-container">
-                        {allAnswers.map((answer, index) => (
-                            <button
-                                key={index}
-                                onClick={() => handleAnswer(answer)}
-                                className="answer-button"
-                                dangerouslySetInnerHTML={{ __html: answer }}
-                            ></button>
-                        ))}
+                        {allAnswers.map((answer, index) => {
+                            let buttonClass = 'answer-button';
+                            if (selectedAnswer) {
+                                if (answer === currentQ.correct_answer) {
+                                    buttonClass += ' correct';
+                                } else if (answer === selectedAnswer && answer !== currentQ.correct_answer) {
+                                    buttonClass += ' incorrect';
+                                }
+                            }
+                            return (
+                                <button
+                                    key={index}
+                                    onClick={() => !selectedAnswer && handleAnswer(answer)}
+                                    className={buttonClass}
+                                    dangerouslySetInnerHTML={{ __html: answer }}
+                                    disabled={!!selectedAnswer}
+                                ></button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
