@@ -1,9 +1,23 @@
 # Triviality Project
 
-## Comandos para Iniciar el Proyecto
+## Descripción
+Triviality es un juego de preguntas y respuestas basado en la API Open Trivia Database. El proyecto utiliza Laravel para el backend y React para el frontend.
+
+## Requisitos Previos
+- PHP 8.x
+- Composer
+- Node.js y npm
+- MySQL
+- Apache
+- Ubuntu Server (o similar)
+
+## Configuración del Entorno
 
 ### 1. Backend (Laravel)
 ```bash
+# Entrar al directorio backend
+cd backend
+
 # Instalar dependencias
 composer install
 
@@ -15,14 +29,9 @@ php artisan key:generate
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
-# DB_DATABASE=triviality
-# DB_USERNAME=root
-# DB_PASSWORD=
-
-# Crear base de datos
-mysql -u root -p
-CREATE DATABASE triviality;
-exit;
+# DB_DATABASE=triviality_db
+# DB_USERNAME=laraveluser
+# DB_PASSWORD=tu_contraseña
 
 # Migrar base de datos
 php artisan migrate
@@ -39,46 +48,67 @@ cd frontend
 # Instalar dependencias
 npm install
 
-# Configurar vite.config.ts
-# Asegúrate de que el archivo vite.config.ts tenga esta configuración:
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: '../public/dist',
-    emptyOutDir: true
-  }
-})
-
-# Compilar el frontend
-npm run build
+# Iniciar servidor de desarrollo
+npm start
 ```
 
-### 3. Configurar Apache
+### 3. Configuración de Apache
 ```bash
-# Habilitar módulos
-sudo a2enmod proxy proxy_http rewrite headers
+# Habilitar módulos necesarios
+sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
 
-# Crear virtual host
+# Configurar VirtualHost
 sudo nano /etc/apache2/sites-available/triviality.conf
+```
 
-# Añadir configuración:
+#### Configuración para Desarrollo
+```apache
 <VirtualHost *:80>
     ServerName triviality.local
-    DocumentRoot /var/www/html/triviality-project/public
+    
+    # Proxy para el frontend en modo desarrollo
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
 
+    # Proxy para el backend
     ProxyPass /api http://localhost:8000/api
     ProxyPassReverse /api http://localhost:8000/api
 
-    <Directory /var/www/html/triviality-project/public>
+    # WebSocket para Hot Module Replacement
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /(.*)           ws://localhost:3000/$1 [P,L]
+    
+    # Logs
+    ErrorLog ${APACHE_LOG_DIR}/triviality-error.log
+    CustomLog ${APACHE_LOG_DIR}/triviality-access.log combined
+</VirtualHost>
+```
+
+#### Configuración para Producción
+```apache
+<VirtualHost *:80>
+    ServerName triviality.local
+    DocumentRoot /var/www/html/triviality-project/frontend/build
+
+    # Configuración del frontend
+    <Directory /var/www/html/triviality-project/frontend/build>
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
-</VirtualHost>
 
+    # Proxy para el backend
+    ProxyPass /api http://localhost:8000/api
+    ProxyPassReverse /api http://localhost:8000/api
+
+    # Logs
+    ErrorLog ${APACHE_LOG_DIR}/triviality-error.log
+    CustomLog ${APACHE_LOG_DIR}/triviality-access.log combined
+</VirtualHost>
+```
+
+```bash
 # Habilitar sitio y reiniciar Apache
 sudo a2ensite triviality.conf
 sudo systemctl restart apache2
@@ -91,142 +121,73 @@ sudo nano /etc/hosts
 # Añadir: 127.0.0.1 triviality.local
 ```
 
-### 5. Dar Permisos
+## Flujo de Trabajo
+
+### Desarrollo
+1. Inicia el servidor Laravel: `cd backend && php artisan serve`
+2. Inicia el servidor React: `cd frontend && npm start`
+3. Accede a http://triviality.local
+   - Los cambios se actualizarán automáticamente (hot reload)
+   - No necesitas ejecutar `npm run build` para ver los cambios
+
+### Producción
+1. Compila el frontend: `cd frontend && npm run build`
+2. Actualiza la configuración de Apache para producción
+3. Reinicia Apache: `sudo systemctl restart apache2`
+
+## Solución de Problemas
+
+### Error "Missing script: dev"
+El proyecto usa `npm start` en lugar de `npm run dev` para el servidor de desarrollo.
+
+### Cambios no visibles en desarrollo
+Verifica que:
+- Servidor Laravel está corriendo (`php artisan serve`)
+- Servidor React está corriendo (`npm start`)
+- Apache está configurado correctamente
+- Estás accediendo a http://triviality.local
+
+### Errores de conexión con la API
+Verifica que:
+- Backend está corriendo en el puerto 8000
+- Configuraciones de proxy en Apache son correctas
+- Campo "proxy" en package.json está configurado
+
+### Problemas de permisos
 ```bash
-sudo chown -R www-data:www-data /var/www/html/triviality-project
-sudo chmod -R 755 /var/www/html/triviality-project
+sudo chown -R $USER:www-data /var/www/html/triviality-project
+sudo chmod -R 775 /var/www/html/triviality-project
 ```
+
+## Estructura del Proyecto
+```
+triviality-project/
+├── backend/               # Código del backend Laravel
+│   ├── app/              # Lógica de la aplicación
+│   ├── routes/           # Definición de rutas API
+│   └── ...
+├── frontend/             # Código del frontend React
+│   ├── src/              # Código fuente
+│   │   ├── components/   # Componentes React
+│   ├── build/            # Versión compilada (producción)
+│   └── ...
+```
+
+## Tecnologías Utilizadas
+
+- **Backend**: Laravel, PHP, MySQL
+- **Frontend**: React, TypeScript, Axios
+- **Servidor**: Apache
 
 ## Verificar Instalación
 
 1. Backend: http://localhost:8000/api/ejemplo
 2. Frontend: http://triviality.local
 
-## Requisitos Previos
+## Endpoints de la API
 
-- PHP 8.x
-- Composer
-- Node.js y npm
-- MySQL
-- Apache
-- Ubuntu Server (o similar)
-
-## Tecnologías Utilizadas
-
-### Backend
-- Laravel
-- PHP
-- MySQL
-
-### Frontend
-- React
-- Axios
-
-### Servidor
-- Apache
-- VirtualHost
-
-## Configuración del Entorno Local
-
-### 1. Backend (Laravel)
-
-```bash
-# Instalar dependencias de PHP
-composer install
-
-# Copiar archivo de entorno
-cp .env.example .env
-
-# Generar clave de aplicación
-php artisan key:generate
-
-# Configurar la base de datos en .env
-# DB_CONNECTION=mysql
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=triviality
-# DB_USERNAME=root
-# DB_PASSWORD=
-
-# Crear la base de datos
-mysql -u root -p
-CREATE DATABASE triviality;
-exit;
-
-# Iniciar el servidor de Laravel
-php artisan serve
-```
-
-### 2. Frontend (React)
-
-```bash
-# Entrar al directorio del frontend
-cd frontend
-
-# Instalar dependencias
-npm install
-
-# Iniciar el servidor de desarrollo
-npm run dev
-```
-
-### 3. Configuración de Apache
-
-```bash
-# Habilitar módulos necesarios
-sudo a2enmod proxy
-sudo a2enmod proxy_http
-sudo a2enmod rewrite
-sudo a2enmod headers
-
-# Crear archivo de configuración del virtual host
-sudo nano /etc/apache2/sites-available/triviality.conf
-
-# Añadir la configuración:
-<VirtualHost *:80>
-    ServerName triviality.local
-    DocumentRoot /var/www/html/triviality-project/public
-
-    ProxyPass /api http://localhost:8000/api
-    ProxyPassReverse /api http://localhost:8000/api
-
-    <Directory /var/www/html/triviality-project/public>
-        Options Indexes FollowSymLinks
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-
-# Habilitar el sitio
-sudo a2ensite triviality.conf
-
-# Reiniciar Apache
-sudo systemctl restart apache2
-```
-
-### 4. Configuración de Hosts
-
-```bash
-# Editar archivo hosts
-sudo nano /etc/hosts
-
-# Añadir la línea:
-127.0.0.1 triviality.local
-```
-
-### 5. Verificar Permisos
-
-```bash
-# Dar permisos al directorio del proyecto
-sudo chown -R www-data:www-data /var/www/html/triviality-project
-sudo chmod -R 755 /var/www/html/triviality-project
-```
-
-## Verificación
-
-1. Acceder a `http://triviality.local` para ver el frontend
-2. Acceder a `http://localhost:8000/api/ejemplo` para ver el backend
-3. Probar los botones "Hacer GET" y "Hacer POST" en el frontend
+- GET `/api/ejemplo`: Obtiene datos de ejemplo
+- POST `/api/ejemplo`: Envía datos de ejemplo
 
 ## Estructura del Proyecto
 
