@@ -4,11 +4,13 @@
 Triviality es un juego de preguntas y respuestas basado en la API Open Trivia Database. El proyecto utiliza Laravel para el backend y React para el frontend.
 
 ## Requisitos Previos
+
+Asegúrate de tener instalados los siguientes requisitos antes de continuar:
+
 - PHP 8.x
 - Composer
 - Node.js y npm
 - MySQL
-- Apache
 - Ubuntu Server (o similar)
 - Docker (para el traductor local)
 
@@ -41,6 +43,7 @@ Para una configuración manual paso a paso, sigue las instrucciones detalladas a
 ## Configuración Manual del Entorno
 
 ### 1. Backend (Laravel)
+
 ```bash
 # Entrar al directorio backend
 cd backend
@@ -61,19 +64,17 @@ php artisan key:generate
 # DB_PASSWORD=Bifidus42
 
 # Crear base de datos
-mysql -u laraveluser -p
-CREATE DATABASE triviality;
-exit;
+mysql -u laraveluser -p -e "CREATE DATABASE triviality;"
 
 # Migrar base de datos
 php artisan migrate
 
 # Iniciar servidor Laravel
-cd backend
 php artisan serve
 ```
 
 ### 2. Frontend (React)
+
 ```bash
 # Entrar al directorio frontend
 cd frontend
@@ -85,7 +86,89 @@ npm install
 npm start
 ```
 
-### 3. Configuración de Apache
+### 3. Instalar Servicio de Traducción Local (LibreTranslate)
+Para mejorar el rendimiento de las traducciones, se utiliza un servidor local de LibreTranslate que elimina la dependencia de servicios externos.
+
+```bash
+# Ejecutar el script de instalación del traductor
+cd /var/www/html/triviality-project
+chmod +x scripts/setup-translator.sh
+./scripts/setup-translator.sh
+```
+
+El script realizará las siguientes acciones:
+1. Verificar si Docker está instalado (instalarlo si es necesario)
+2. Crear y configurar el contenedor de LibreTranslate
+3. Configurar el contenedor para reiniciarse automáticamente
+4. Probar el servicio de traducción
+
+Una vez configurado, el servicio estará disponible en:
+- URL: http://localhost:5000
+- API Endpoint: http://localhost:5000/translate
+
+> **Nota importante**: La primera vez que se inicia LibreTranslate, descargará los modelos de idioma necesarios, lo que puede tardar varios minutos. Durante este tiempo, el servicio no estará completamente operativo.
+
+### 4. Verificar Instalación y Servicios
+Para verificar que todos los servicios estén funcionando correctamente, se proporciona un script de verificación:
+
+```bash
+# Ejecutar el script de verificación de servicios
+cd /var/www/html/triviality-project
+chmod +x scripts/check-services.sh
+./scripts/check-services.sh
+```
+
+Este script verificará:
+1. La instalación de Docker
+2. El estado del contenedor LibreTranslate
+3. La disponibilidad de la API de traducción
+4. El estado del servidor Laravel
+5. La disponibilidad de la API de Laravel
+6. El estado del servidor React
+
+Si algún servicio no está funcionando correctamente, el script proporcionará recomendaciones para solucionarlo.
+
+## Flujo de Trabajo
+
+### Desarrollo
+1. Inicia el servidor Laravel:
+   ```bash
+   cd backend && php artisan serve
+   ```
+2. Inicia el servidor React:
+   ```bash
+   cd frontend && npm start
+   ```
+3. Verifica que el servicio de traducción esté funcionando:
+   ```bash
+   docker ps | grep libretranslate
+   ```
+4. Accede a la aplicación:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000/api
+   - Traductor: http://localhost:5000
+
+Los cambios se actualizarán automáticamente (hot reload). No necesitas ejecutar `npm run build` para ver los cambios.
+
+### Producción
+1. Compila el frontend:
+   ```bash
+   cd frontend && npm run build
+   ```
+2. Configura Apache para servir la aplicación en producción.
+3. Reinicia Apache:
+   ```bash
+   sudo systemctl restart apache2
+   ```
+4. Verifica que el servicio de traducción esté funcionando:
+   ```bash
+   docker ps | grep libretranslate
+   ```
+
+## Configuración Alternativa con Apache VirtualHost (Opcional)
+
+Si prefieres usar Apache como proxy para los servidores de desarrollo, sigue estos pasos adicionales:
+
 ```bash
 # Habilitar módulos necesarios
 sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
@@ -94,7 +177,7 @@ sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
 sudo nano /etc/apache2/sites-available/triviality.conf
 ```
 
-#### Configuración para Desarrollo
+### Configuración para Desarrollo
 ```apache
 <VirtualHost *:80>
     ServerName triviality.local
@@ -118,7 +201,7 @@ sudo nano /etc/apache2/sites-available/triviality.conf
 </VirtualHost>
 ```
 
-#### Configuración para Producción
+### Configuración para Producción
 ```apache
 <VirtualHost *:80>
     ServerName triviality.local
@@ -141,88 +224,32 @@ sudo nano /etc/apache2/sites-available/triviality.conf
 </VirtualHost>
 ```
 
-```bash
-# Habilitar sitio y reiniciar Apache
-sudo a2ensite triviality.conf
-sudo systemctl restart apache2
-```
-
-### 4. Configurar Hosts
+Si usas esta configuración, añade el dominio local:
 ```bash
 # Añadir dominio local
 sudo nano /etc/hosts
 # Añadir: 127.0.0.1 triviality.local
 ```
 
-### 5. Instalar Servicio de Traducción Local (LibreTranslate)
-Para mejorar el rendimiento de las traducciones, se utiliza un servidor local de LibreTranslate que elimina la dependencia de servicios externos.
-
+Y habilita el sitio:
 ```bash
-# Ejecutar el script de instalación del traductor
-cd /var/www/html/triviality-project
-chmod +x scripts/setup-translator.sh
-./scripts/setup-translator.sh
+# Habilitar sitio y reiniciar Apache
+sudo a2ensite triviality.conf
+sudo systemctl restart apache2
 ```
 
-El script realizará las siguientes acciones:
-1. Verificar si Docker está instalado (instalarlo si es necesario)
-2. Crear y configurar el contenedor de LibreTranslate
-3. Configurar el contenedor para reiniciarse automáticamente
-4. Probar el servicio de traducción
-
-Una vez configurado, el servicio estará disponible en:
-- URL: http://localhost:5000
-- API Endpoint: http://localhost:5000/translate
-
-> **Nota importante**: La primera vez que se inicia LibreTranslate, descargará los modelos de idioma necesarios, lo que puede tardar varios minutos. Durante este tiempo, el servicio no estará completamente operativo.
-
-### 6. Verificar Instalación y Servicios
-Para verificar que todos los servicios estén funcionando correctamente, se proporciona un script de verificación:
-
-```bash
-# Ejecutar el script de verificación de servicios
-cd /var/www/html/triviality-project
-chmod +x scripts/check-services.sh
-./scripts/check-services.sh
-```
-
-Este script verificará:
-1. La instalación de Docker
-2. El estado del contenedor LibreTranslate
-3. La disponibilidad de la API de traducción
-4. El estado del servidor Laravel
-5. La disponibilidad de la API de Laravel
-6. El estado del servidor React
-
-Si algún servicio no está funcionando correctamente, el script proporcionará recomendaciones para solucionarlo.
-
-## Flujo de Trabajo
-
-### Desarrollo
-1. Inicia el servidor Laravel: `cd backend && php artisan serve`
-2. Inicia el servidor React: `cd frontend && npm start`
-3. Verifica que el servicio de traducción esté funcionando: `docker ps | grep libretranslate`
-4. Accede a http://triviality.local
-   - Los cambios se actualizarán automáticamente (hot reload)
-   - No necesitas ejecutar `npm run build` para ver los cambios
-
-### Producción
-1. Compila el frontend: `cd frontend && npm run build`
-2. Actualiza la configuración de Apache para producción
-3. Reinicia Apache: `sudo systemctl restart apache2`
-4. Verifica que el servicio de traducción esté funcionando: `docker ps | grep libretranslate`
+> **Nota**: Los scripts de configuración automática NO configuran VirtualHost. Esta es una opción avanzada manual.
 
 ## Solución de Problemas
 
 ### Error "Missing script: dev"
-El proyecto usa `npm start` en lugar de `npm run dev` para el servidor de desarrollo.
+El proyecto utiliza `npm start` en lugar de `npm run dev` para el servidor de desarrollo.
 
 ### Cambios no visibles en desarrollo
 Verifica que:
-- Servidor Laravel está corriendo (`php artisan serve`)
-- Servidor React está corriendo (`npm start`)
-- Apache está configurado correctamente
-- Estás accediendo a http://triviality.local
+- El servidor Laravel esté corriendo (`php artisan serve`).
+- El servidor React esté corriendo (`npm start`).
+- Si usas Apache como proxy, verifica que esté configurado correctamente.
 
 ### Problemas con el servicio de traducción
 Si las traducciones no funcionan correctamente:
@@ -232,18 +259,33 @@ Si las traducciones no funcionan correctamente:
 4. Verifica si puedes acceder a la interfaz web: http://localhost:5000
 5. Ejecuta el script de configuración nuevamente: `./scripts/setup-translator.sh`
 
+### Problemas con permisos
+Si experimentas problemas con permisos en la carpeta del proyecto:
+
+```bash
+sudo chown -R $USER:www-data /var/www/html/triviality-project
+sudo chmod -R 775 /var/www/html/triviality-project
+```
+
+### Apache no se reinicia
+Para verificar errores en Apache:
+
+```bash
+sudo systemctl status apache2
+sudo tail -f /var/log/apache2/error.log
+```
+
 ## Tecnologías Utilizadas
 
 - **Backend**: Laravel, PHP, MySQL
 - **Frontend**: React, TypeScript, Axios
-- **Servidor**: Apache
 - **Traducción**: LibreTranslate (Docker), API local
 
 ## Verificar Instalación
 
-1. Backend: http://localhost:8000/api/ejemplo
-2. Frontend: http://triviality.local
-3. Traductor: http://localhost:5000
+- **Backend**: http://localhost:8000/api
+- **Frontend**: http://localhost:3000
+- **Traductor**: http://localhost:5000
 
 ## Estructura del Proyecto
 
@@ -269,23 +311,8 @@ triviality-project/
 
 ## Endpoints de la API
 
-- GET `/api/ejemplo`: Obtiene datos de ejemplo
-- POST `/api/ejemplo`: Envía datos de ejemplo
-- GET `/api/trivia/questions`: Obtiene preguntas de trivia (traducidas)
-
-## Solución de Problemas Generales
-
-Si encuentras problemas con los permisos:
-```bash
-sudo chown -R $USER:www-data /var/www/html/triviality-project
-sudo chmod -R 775 /var/www/html/triviality-project
-```
-
-Si Apache no se reinicia:
-```bash
-sudo systemctl status apache2
-sudo tail -f /var/log/apache2/error.log
-```
+- `GET /api/trivia/questions` - Obtiene preguntas de trivia (traducidas).
+- `GET /api/trivia/categories` - Obtiene las categorías de trivia.
 
 
 
