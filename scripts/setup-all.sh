@@ -168,6 +168,10 @@ if [ -d "frontend" ]; then
     echo_color $YELLOW "Instalando dependencias de Node.js..."
     run_command "npm install" "No se pudieron instalar las dependencias de Node.js."
     
+    echo_color $YELLOW "Instalando libreria de routing"
+    run_command "npm install react-router-dom@6.22.3" "No se pudo instalar React-Dom"
+    run_command "npm install --save-dev @types/react-router-dom" "No se pudieron instalar dependencias de React-Dom"
+    
     cd ..
     echo_color $GREEN "Configuración del frontend completada correctamente."
 else
