@@ -26,7 +26,7 @@ cd triviality-project
 # Hacer el script ejecutable
 chmod +x scripts/setup-all.sh
 
-# ⚠️IMPORTANTE EJECUTAR EN RAÍZ DE PRYECTO⚠️
+# ⚠️IMPORTANTE EJECUTAR EN RAÍZ DE PROYECTO⚠️
 # Ejecutar el script de configuración completa
 ./scripts/setup-all.sh
 ```
