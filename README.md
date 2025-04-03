@@ -37,7 +37,10 @@ Este script realizará todas las siguientes tareas automáticamente:
 3. Instalar y configurar el traductor local LibreTranslate
 4. Ofrecer iniciar todos los servicios y verificar su estado
 
-> **Nota**: Durante la ejecución, el script te pedirá confirmar la configuración de la base de datos y si deseas iniciar los servicios automáticamente.
+> **Nota**: Durante la ejecución, el script te pedirá:
+> - Configurar la base de datos (nombre, usuario y contraseña)
+> - Crear la base de datos y el usuario si no existen
+> - Confirmar si deseas iniciar los servicios automáticamente
 
 Para una configuración manual paso a paso, sigue las instrucciones detalladas a continuación.
 
@@ -60,12 +63,18 @@ php artisan key:generate
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
-# DB_DATABASE=triviality_db
-# DB_USERNAME=laraveluser
-# DB_PASSWORD=Bifidus42
+# DB_DATABASE=triviality
+# DB_USERNAME=triviality_user
+# DB_PASSWORD=
 
-# Crear base de datos
-mysql -u laraveluser -p -e "CREATE DATABASE triviality;"
+# El script de configuración te guiará para crear la base de datos
+# y configurar un usuario con los permisos necesarios.
+
+# Crear base de datos (alternativa manual)
+# mysql -u root -p -e "CREATE DATABASE triviality;"
+# mysql -u root -p -e "CREATE USER 'triviality_user'@'localhost' IDENTIFIED BY 'tu_contraseña';"
+# mysql -u root -p -e "GRANT ALL PRIVILEGES ON triviality.* TO 'triviality_user'@'localhost';"
+# mysql -u root -p -e "FLUSH PRIVILEGES;"
 
 # Migrar base de datos
 php artisan migrate
