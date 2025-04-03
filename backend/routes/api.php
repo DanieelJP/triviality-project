@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EjemploController;
 use App\Http\Controllers\TriviaController;
 
 /*
@@ -19,10 +18,6 @@ use App\Http\Controllers\TriviaController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-// Rutas de ejemplo
-Route::get('/ejemplo', [EjemploController::class, 'index']);
-Route::post('/ejemplo', [EjemploController::class, 'store']);
 
 // Rutas de trivia
 Route::get('/trivia/questions', [TriviaController::class, 'getQuestions']);
