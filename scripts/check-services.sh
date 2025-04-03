@@ -47,7 +47,7 @@ if [ $DOCKER_STATUS -ne 0 ]; then
 fi
 
 # 2. Verificar contenedor LibreTranslate
-check_service "contenedor LibreTranslate" "docker ps | grep libretranslate" "libretranslate"
+check_service "contenedor LibreTranslate" "sudo docker ps | grep libretranslate" "libretranslate"
 LIBRETRANSLATE_STATUS=$?
 
 if [ $LIBRETRANSLATE_STATUS -ne 0 ]; then
@@ -64,7 +64,7 @@ LIBRETRANSLATE_API_STATUS=$?
 
 if [ $LIBRETRANSLATE_API_STATUS -ne 0 ]; then
     echo_color $YELLOW "La API de LibreTranslate no está respondiendo correctamente."
-    echo_color $YELLOW "Revisa los logs del contenedor: docker logs libretranslate"
+    echo_color $YELLOW "Revisa los logs del contenedor: sudo docker logs libretranslate"
     echo_color $YELLOW "El contenedor podría estar descargando modelos de lenguaje."
     echo
 fi
