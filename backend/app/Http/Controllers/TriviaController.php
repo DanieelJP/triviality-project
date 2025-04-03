@@ -20,6 +20,8 @@ class TriviaController extends Controller
     public function getQuestions(Request $request)
     {
         try {
+            $startTime = microtime(true);
+            
             $response = Http::timeout(5)->get($this->baseUrl, [
                 'amount' => $request->input('amount', 10),
                 'difficulty' => $request->input('difficulty', 'medium'),
@@ -30,11 +32,13 @@ class TriviaController extends Controller
                 $data = $response->json();
                 
                 if (isset($data['results']) && is_array($data['results'])) {
-                    // Translate questions
-                    $data['results'] = array_map(function ($question) {
-                        return $this->translationService->translateQuestion($question);
-                    }, $data['results']);
+                    // Usar la nueva traducción optimizada con servidor local
+                    $data['results'] = $this->translationService->translateQuestionsOptimized($data['results']);
                 }
+                
+                $endTime = microtime(true);
+                $executionTime = ($endTime - $startTime);
+                Log::info("Tiempo de ejecución para obtener y traducir preguntas: " . $executionTime . " segundos");
 
                 return response()->json($data);
             }
@@ -50,20 +54,23 @@ class TriviaController extends Controller
     public function getCategories()
     {
         try {
+            $startTime = microtime(true);
+            
             $response = Http::timeout(5)->get('https://opentdb.com/api_category.php');
 
             if ($response->successful()) {
                 $data = $response->json();
                 
                 if (isset($data['trivia_categories']) && is_array($data['trivia_categories'])) {
-                    // Translate categories
-                    $data['trivia_categories'] = array_map(function ($category) {
-                        return [
-                            'id' => $category['id'],
-                            'name' => $this->translationService->translate($category['name'])
-                        ];
-                    }, $data['trivia_categories']);
+                    // Traducir directamente las categorías - son pocas
+                    foreach ($data['trivia_categories'] as &$category) {
+                        $category['name'] = $this->translationService->translate($category['name']);
+                    }
                 }
+                
+                $endTime = microtime(true);
+                $executionTime = ($endTime - $startTime);
+                Log::info("Tiempo de ejecución para obtener y traducir categorías: " . $executionTime . " segundos");
 
                 return response()->json($data);
             }
