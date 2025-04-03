@@ -61,7 +61,8 @@ if [ -d "backend" ]; then
         run_command "php artisan key:generate" "No se pudo generar la clave de la aplicación."
     fi
     
-    echo_color $YELLOW "Verificando conexión a la base de datos..."
+    echo_color $YELLOW "Configuración de la base de datos..."
+    # Leer configuración actual
     DB_CONNECTION=$(grep DB_CONNECTION .env | cut -d '=' -f2)
     DB_HOST=$(grep DB_HOST .env | cut -d '=' -f2)
     DB_PORT=$(grep DB_PORT .env | cut -d '=' -f2)
@@ -69,18 +70,80 @@ if [ -d "backend" ]; then
     DB_USERNAME=$(grep DB_USERNAME .env | cut -d '=' -f2)
     DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d '=' -f2)
     
+    # Mostrar configuración actual y preguntar si desea modificarla
     echo_color $YELLOW "Configuración de base de datos actual:"
     echo "DB_CONNECTION=$DB_CONNECTION"
     echo "DB_HOST=$DB_HOST"
     echo "DB_PORT=$DB_PORT"
     echo "DB_DATABASE=$DB_DATABASE"
     echo "DB_USERNAME=$DB_USERNAME"
-    echo "DB_PASSWORD=******"
+    echo "DB_PASSWORD=******"  # Por seguridad no mostramos la contraseña real
     
-    read -p "¿Deseas continuar con esta configuración de base de datos? (s/n): " CONFIRM_DB
-    if [[ $CONFIRM_DB != "s" && $CONFIRM_DB != "S" ]]; then
-        echo_color $YELLOW "Por favor, edita el archivo .env manualmente y vuelve a ejecutar este script."
-        exit 1
+    read -p "¿Deseas modificar esta configuración? (s/n): " MODIFY_DB
+    
+    if [[ $MODIFY_DB == "s" || $MODIFY_DB == "S" ]]; then
+        # Solicitar valores para la base de datos
+        read -p "Nombre de la base de datos [$DB_DATABASE]: " NEW_DB_DATABASE
+        read -p "Usuario de la base de datos [$DB_USERNAME]: " NEW_DB_USERNAME
+        read -p "Contraseña de la base de datos (no se mostrará) [dejar vacío para no cambiar]: " -s NEW_DB_PASSWORD
+        echo ""  # Salto de línea después de la contraseña
+        
+        # Usar valores predeterminados si no se proporcionaron nuevos
+        DB_DATABASE=${NEW_DB_DATABASE:-$DB_DATABASE}
+        DB_USERNAME=${NEW_DB_USERNAME:-$DB_USERNAME}
+        
+        # Actualizar el archivo .env
+        sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/" .env
+        sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" .env
+        
+        # Actualizar contraseña solo si se proporcionó una nueva
+        if [ ! -z "$NEW_DB_PASSWORD" ]; then
+            sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$NEW_DB_PASSWORD/" .env
+        fi
+        
+        echo_color $GREEN "Configuración de base de datos actualizada."
+        
+        # Preguntar si desea crear la base de datos
+        read -p "¿Crear la base de datos '$DB_DATABASE'? (s/n): " CREATE_DB
+        if [[ $CREATE_DB == "s" || $CREATE_DB == "S" ]]; then
+            read -p "Ingresa la contraseña de root para MySQL (no se mostrará): " -s MYSQL_ROOT_PASSWORD
+            echo ""  # Salto de línea después de la contraseña
+            
+            echo_color $YELLOW "Creando base de datos..."
+            # Crear base de datos
+            if mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" 2>/dev/null; then
+                echo_color $GREEN "Base de datos '$DB_DATABASE' creada correctamente."
+                
+                # Verificar si el usuario ya existe
+                USER_EXISTS=$(mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT user FROM mysql.user WHERE user='$DB_USERNAME';" 2>/dev/null | grep -c "$DB_USERNAME")
+                
+                if [ "$USER_EXISTS" -eq 0 ]; then
+                    echo_color $YELLOW "Creando usuario '$DB_USERNAME'..."
+                    # Crear usuario y asignar permisos, con contraseña segura
+                    if [ -z "$NEW_DB_PASSWORD" ]; then
+                        # Si no se proporcionó una contraseña, generamos una aleatoria
+                        NEW_DB_PASSWORD=$(openssl rand -base64 12)
+                        sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$NEW_DB_PASSWORD/" .env
+                        echo_color $GREEN "Se generó una contraseña aleatoria y se guardó en el archivo .env"
+                    fi
+                    
+                    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$NEW_DB_PASSWORD'; GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
+                    echo_color $GREEN "Usuario '$DB_USERNAME' creado y permisos asignados."
+                else
+                    echo_color $YELLOW "El usuario '$DB_USERNAME' ya existe. Actualizando permisos..."
+                    # Actualizar permisos y contraseña si se proporcionó una nueva
+                    if [ ! -z "$NEW_DB_PASSWORD" ]; then
+                        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "ALTER USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$NEW_DB_PASSWORD'; GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
+                    else
+                        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
+                    fi
+                    echo_color $GREEN "Permisos actualizados para el usuario '$DB_USERNAME'."
+                fi
+            else
+                echo_color $RED "Error al crear la base de datos. Verifica la contraseña de root de MySQL."
+                echo_color $YELLOW "Puedes crear la base de datos manualmente con: CREATE DATABASE $DB_DATABASE;"
+            fi
+        fi
     fi
     
     echo_color $YELLOW "Ejecutando migraciones de la base de datos..."
