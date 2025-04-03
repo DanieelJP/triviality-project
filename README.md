@@ -20,7 +20,7 @@ Para configurar todo el entorno de forma automática, incluyendo backend, fronte
 
 ```bash
 # Clonar el repositorio (si aún no lo has hecho)
-git clone https://github.com/usuario/triviality-project.git
+git clone https://github.com/DanieelJP/triviality-project.git
 cd triviality-project
 
 # Hacer el script ejecutable
