@@ -163,17 +163,17 @@ echo_color $BLUE "Paso 2: Configurando Frontend (React)"
 echo_color $BLUE "-------------------------------------------------------"
 
 if [ -d "frontend" ]; then
-    echo_color $YELLOW "Instalando Node.js 16.x..."
-    run_command "curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -" "No se pudo configurar el repositorio de Node.js"
+    echo_color $YELLOW "Instalando Node.js 18.x (LTS)..."
+    run_command "curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -" "No se pudo configurar el repositorio de Node.js"
     run_command "sudo apt-get install -y nodejs" "No se pudo instalar Node.js"
     
     cd frontend
     
     echo_color $YELLOW "Instalando dependencias de Node.js y librería de routing..."
-    run_command "rm -rf node_modules package-lock.json && npm install react-router-dom@6.22.3 --force" "No se pudo instalar React-Dom"
-    run_command "npm install --save-dev @types/react-router-dom --force" "No se pudieron instalar dependencias de React-Dom"
-    
-    echo_color $YELLOW "Configurando variables de entorno para Node.js..."
+    run_command "rm -rf node_modules package-lock.json" "No se pudo limpiar instalaciones previas"
+    run_command "npm install" "No se pudo instalar dependencias base"
+    run_command "npm install react-router-dom@6.22.3" "No se pudo instalar React-Dom"
+    run_command "npm install --save-dev @types/react-router-dom" "No se pudieron instalar dependencias de React-Dom"
     
     cd ..
     echo_color $GREEN "Configuración del frontend completada correctamente."
