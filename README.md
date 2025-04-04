@@ -114,7 +114,7 @@ El script realizará las siguientes acciones:
 
 Una vez configurado, el servicio estará disponible en:
 - URL: http://localhost:5000
-- API Endpoint: http://localhost:5000/translate
+- API Endpoint: http://localhost:5000/translate (no visible en navegador)
 
 > **Nota importante**: La primera vez que se inicia LibreTranslate, descargará los modelos de idioma necesarios, lo que puede tardar varios minutos. Durante este tiempo, el servicio no estará completamente operativo.
 
