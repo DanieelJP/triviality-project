@@ -163,6 +163,10 @@ echo_color $BLUE "Paso 2: Configurando Frontend (React)"
 echo_color $BLUE "-------------------------------------------------------"
 
 if [ -d "frontend" ]; then
+    echo_color $YELLOW "Instalando Node.js 16.x..."
+    run_command "curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -" "No se pudo configurar el repositorio de Node.js"
+    run_command "sudo apt-get install -y nodejs" "No se pudo instalar Node.js"
+    
     cd frontend
     
     echo_color $YELLOW "Instalando dependencias de Node.js y librería de routing..."
@@ -170,7 +174,6 @@ if [ -d "frontend" ]; then
     run_command "npm install --save-dev @types/react-router-dom --force" "No se pudieron instalar dependencias de React-Dom"
     
     echo_color $YELLOW "Configurando variables de entorno para Node.js..."
-    export NODE_OPTIONS=--openssl-legacy-provider
     
     cd ..
     echo_color $GREEN "Configuración del frontend completada correctamente."
@@ -207,7 +210,7 @@ if [[ $START_SERVICES == "s" || $START_SERVICES == "S" ]]; then
     
     echo_color $YELLOW "Iniciando servidor React (en segundo plano)..."
     cd frontend
-    NODE_OPTIONS=--openssl-legacy-provider npm start > /dev/null 2>&1 &
+    npm start > /dev/null 2>&1 &
     REACT_PID=$!
     cd ..
     
