@@ -165,12 +165,9 @@ echo_color $BLUE "-------------------------------------------------------"
 if [ -d "frontend" ]; then
     cd frontend
     
-    echo_color $YELLOW "Instalando dependencias de Node.js..."
-    run_command "npm install" "No se pudieron instalar las dependencias de Node.js."
-    
-    echo_color $YELLOW "Instalando libreria de routing"
-    run_command "npm install react-router-dom@6.22.3" "No se pudo instalar React-Dom"
-    run_command "npm install --save-dev @types/react-router-dom" "No se pudieron instalar dependencias de React-Dom"
+    echo_color $YELLOW "Instalando dependencias de Node.js y librería de routing..."
+    run_command "rm -rf node_modules package-lock.json && npm install react-router-dom@6.22.3 --force" "No se pudo instalar React-Dom"
+    run_command "npm install --save-dev @types/react-router-dom --force" "No se pudieron instalar dependencias de React-Dom"
     
     cd ..
     echo_color $GREEN "Configuración del frontend completada correctamente."
