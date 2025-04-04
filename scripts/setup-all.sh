@@ -171,9 +171,9 @@ if [ -d "frontend" ]; then
     
     echo_color $YELLOW "Instalando dependencias de Node.js y librería de routing..."
     run_command "rm -rf node_modules package-lock.json" "No se pudo limpiar instalaciones previas"
-    run_command "npm install" "No se pudo instalar dependencias base"
-    run_command "npm install react-router-dom@6.22.3" "No se pudo instalar React-Dom"
-    run_command "npm install --save-dev @types/react-router-dom" "No se pudieron instalar dependencias de React-Dom"
+    run_command "npm install --legacy-peer-deps" "No se pudo instalar dependencias base"
+    run_command "npm install react-router-dom@6.22.3 --legacy-peer-deps" "No se pudo instalar React-Dom"
+    run_command "npm install --save-dev @types/react-router-dom --legacy-peer-deps" "No se pudieron instalar dependencias de React-Dom"
     
     cd ..
     echo_color $GREEN "Configuración del frontend completada correctamente."
