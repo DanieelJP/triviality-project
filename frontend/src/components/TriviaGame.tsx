@@ -133,7 +133,7 @@ const TriviaGame: React.FC = () => {
                         </div>
                         <div className="text-center">
                             <button className="start-button" onClick={fetchQuestions}>
-                                ¡Comenzar Juego!
+                                Play
                             </button>
                         </div>
                     </div>
