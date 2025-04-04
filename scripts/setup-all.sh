@@ -169,6 +169,9 @@ if [ -d "frontend" ]; then
     run_command "rm -rf node_modules package-lock.json && npm install react-router-dom@6.22.3 --force" "No se pudo instalar React-Dom"
     run_command "npm install --save-dev @types/react-router-dom --force" "No se pudieron instalar dependencias de React-Dom"
     
+    echo_color $YELLOW "Configurando variables de entorno para Node.js..."
+    export NODE_OPTIONS=--openssl-legacy-provider
+    
     cd ..
     echo_color $GREEN "Configuración del frontend completada correctamente."
 else
@@ -204,7 +207,7 @@ if [[ $START_SERVICES == "s" || $START_SERVICES == "S" ]]; then
     
     echo_color $YELLOW "Iniciando servidor React (en segundo plano)..."
     cd frontend
-    npm start > /dev/null 2>&1 &
+    NODE_OPTIONS=--openssl-legacy-provider npm start > /dev/null 2>&1 &
     REACT_PID=$!
     cd ..
     
