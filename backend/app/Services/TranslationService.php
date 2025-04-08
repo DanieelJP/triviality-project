@@ -78,7 +78,7 @@ class TranslationService
             return Cache::get($cacheKey);
         }
 
-        // Intentar primero con el servidor local (debe ser más rápido)
+        // Intentar primero con el servidor local (para que sea más rápido)
         $localServer = $this->servers[0];
         try {
             // Timeout más corto para servidor local
@@ -125,12 +125,12 @@ class TranslationService
                 }
             } catch (\Exception $e) {
                 Log::warning("Translation failed with server {$baseUrl}: " . $e->getMessage());
-                continue; // Try next server
+                continue; // Intentar el nuevo server
             }
         }
 
         Log::error('All translation servers failed for text: ' . substr($decodedText, 0, 100));
-        return $decodedText; // Return decoded original if all servers fail
+        return $decodedText; // Devolver original (en inglés si el server falla)
     }
 
     public function translateArray($items)
@@ -159,9 +159,9 @@ class TranslationService
         ];
     }
     
-    /**
-     * Traduce preguntas de forma optimizada para mejor rendimiento
-     */
+    
+     //Traduce preguntas de forma optimizada para mejor rendimiento
+     
     public function translateQuestionsOptimized($questions)
     {
         if (!is_array($questions) || empty($questions)) {
