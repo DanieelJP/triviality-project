@@ -3,7 +3,6 @@ html {
 }
 
 body {
-    background-image: url("../BG-Base.jpg");
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -373,4 +372,142 @@ body {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
+}
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #6e0000, #ff0000);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(139, 0, 0, 0.1) 25%, 
+        transparent 25%, 
+        transparent 50%, 
+        rgba(139, 0, 0, 0.1) 50%, 
+        rgba(139, 0, 0, 0.1) 75%, 
+        transparent 75%, 
+        transparent
+    );
+    background-size: 100px 100px;
+    opacity: 0.1;
+    z-index: 1;
+    animation: moveBackground 20s linear infinite;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 100px 100px;
+    }
+}
+
+.login-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 2;
+}
+
+.login-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #333;
+    background: #F5F5F5;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #C82C2C;
+    background: white;
+}
+
+.sign-up-button {
+    width: 100%;
+    padding: 1rem;
+    background: #C82C2C;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.sign-up-button:hover {
+    background: #A52424;
+}
+
+.login-text {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.login-button {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    color: #C82C2C;
+    border: 2px solid #C82C2C;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.login-button:hover {
+    background: rgba(200, 44, 44, 0.1);
 } 
