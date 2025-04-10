@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios, { setAuthToken } from '../config/axios';
 import './AuthStyles.css';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '',
+        email: '',
         password: ''
     });
+
+    const [error, setError] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -17,10 +20,32 @@ const Login: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Aquí iría la lógica de inicio de sesión
-        console.log('Iniciando sesión:', formData);
+        setError('');
+        
+        try {
+            const response = await axios.post('/api/login', formData);
+            const { access_token, user } = response.data;
+            
+            // Guardar el token y la información del usuario
+            localStorage.setItem('token', access_token);
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            // Configurar el token para futuras peticiones
+            setAuthToken(access_token);
+            
+            // Redirigir al usuario
+            navigate('/trivia');
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                setError(error.response.data.message);
+            } else if (error.response?.data?.errors) {
+                setError(Object.values(error.response.data.errors).join('\n'));
+            } else {
+                setError('Error al iniciar sesión. Por favor, inténtalo de nuevo.');
+            }
+        }
     };
 
     const goToSignup = () => {
@@ -31,15 +56,17 @@ const Login: React.FC = () => {
         <div className="login-container">
             <div className="login-card">
                 <h1 className="login-title">Log In</h1>
+                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Nombre de usuario</label>
+                        <label>Correo electrónico</label>
                         <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
+                            type="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleChange}
-                            placeholder="var_mir1"
+                            placeholder="ejemplo@correo.com"
+                            required
                         />
                     </div>
                     <div className="form-group">
@@ -50,6 +77,7 @@ const Login: React.FC = () => {
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="************"
+                            required
                         />
                     </div>
                     <button type="submit" className="login-button">

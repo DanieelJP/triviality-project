@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios, { setAuthToken } from '../config/axios';
 import './AuthStyles.css'; // Usamos el nuevo archivo de estilos compartidos
+
+// Configuración global de Axios
+axios.defaults.withCredentials = true;
 
 const Signup: React.FC = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '',
+        name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        password_confirmation: ''
     });
 
-    const [errors, setErrors] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    });
+    const [errors, setErrors] = useState<{[key: string]: string}>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -25,8 +24,8 @@ const Signup: React.FC = () => {
             [name]: value
         }));
 
-        // Borrar errores cuando el usuario comienza a escribir
-        if (errors[name as keyof typeof errors]) {
+        // Limpiar error cuando el usuario comienza a escribir
+        if (errors[name]) {
             setErrors(prevState => ({
                 ...prevState,
                 [name]: ''
@@ -34,73 +33,81 @@ const Signup: React.FC = () => {
         }
 
         // Validar confirmación de contraseña
-        if (name === 'confirmPassword' || (name === 'password' && formData.confirmPassword)) {
-            if (name === 'password' && value !== formData.confirmPassword) {
+        if (name === 'password_confirmation' || (name === 'password' && formData.password_confirmation)) {
+            if (name === 'password' && value !== formData.password_confirmation) {
                 setErrors(prevState => ({
                     ...prevState,
-                    confirmPassword: 'Las contraseñas no coinciden'
+                    password_confirmation: 'Las contraseñas no coinciden'
                 }));
-            } else if (name === 'confirmPassword' && value !== formData.password) {
+            } else if (name === 'password_confirmation' && value !== formData.password) {
                 setErrors(prevState => ({
                     ...prevState,
-                    confirmPassword: 'Las contraseñas no coinciden'
+                    password_confirmation: 'Las contraseñas no coinciden'
                 }));
             } else {
                 setErrors(prevState => ({
                     ...prevState,
-                    confirmPassword: ''
+                    password_confirmation: ''
                 }));
             }
         }
     };
 
     const validateForm = () => {
-        let isValid = true;
-        const newErrors = { ...errors };
+        const newErrors: {[key: string]: string} = {};
 
-        // Validar nombre de usuario
-        if (!formData.username.trim()) {
-            newErrors.username = 'El nombre de usuario es obligatorio';
-            isValid = false;
+        if (!formData.name.trim()) {
+            newErrors.name = 'El nombre es obligatorio';
         }
 
-        // Validar email
         if (!formData.email.trim()) {
             newErrors.email = 'El correo electrónico es obligatorio';
-            isValid = false;
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'El correo electrónico no es válido';
-            isValid = false;
         }
 
-        // Validar contraseña
         if (!formData.password) {
             newErrors.password = 'La contraseña es obligatoria';
-            isValid = false;
         } else if (formData.password.length < 6) {
             newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-            isValid = false;
         }
 
-        // Validar confirmación de contraseña
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = 'Debes confirmar la contraseña';
-            isValid = false;
-        } else if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Las contraseñas no coinciden';
-            isValid = false;
+        if (!formData.password_confirmation) {
+            newErrors.password_confirmation = 'Debes confirmar la contraseña';
+        } else if (formData.password !== formData.password_confirmation) {
+            newErrors.password_confirmation = 'Las contraseñas no coinciden';
         }
 
         setErrors(newErrors);
-        return isValid;
+        return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
         if (validateForm()) {
-            // Aquí iría la lógica de registro
-            console.log('Registrando usuario:', formData);
+            try {
+                const response = await axios.post('/api/register', formData);
+                const { access_token, user } = response.data;
+                
+                // Guardar el token y la información del usuario
+                localStorage.setItem('token', access_token);
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                // Configurar el token para futuras peticiones
+                setAuthToken(access_token);
+                
+                // Redirigir al usuario
+                navigate('/trivia');
+            } catch (error: any) {
+                if (error.response?.data?.errors) {
+                    setErrors(error.response.data.errors);
+                } else {
+                    setErrors({
+                        general: 'Error al registrar usuario. Por favor, inténtalo de nuevo.'
+                    });
+                }
+            }
         }
     };
 
@@ -112,17 +119,19 @@ const Signup: React.FC = () => {
         <div className="login-container">
             <div className="login-card">
                 <h1 className="login-title">Sign Up</h1>
+                {errors.general && <div className="error-message">{errors.general}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Nombre de usuario</label>
+                        <label>Nombre</label>
                         <input
                             type="text"
-                            name="username"
-                            value={formData.username}
+                            name="name"
+                            value={formData.name}
                             onChange={handleChange}
-                            placeholder="Identificador único"
+                            placeholder="Tu nombre"
+                            required
                         />
-                        {errors.username && <div className="error-message">{errors.username}</div>}
+                        {errors.name && <div className="error-message">{errors.name}</div>}
                     </div>
                     <div className="form-group">
                         <label>Correo electrónico</label>
@@ -132,6 +141,7 @@ const Signup: React.FC = () => {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="ejemplo@correo.com"
+                            required
                         />
                         {errors.email && <div className="error-message">{errors.email}</div>}
                     </div>
@@ -143,6 +153,7 @@ const Signup: React.FC = () => {
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="************"
+                            required
                         />
                         {errors.password && <div className="error-message">{errors.password}</div>}
                     </div>
@@ -150,12 +161,13 @@ const Signup: React.FC = () => {
                         <label>Confirmación de contraseña</label>
                         <input
                             type="password"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
+                            name="password_confirmation"
+                            value={formData.password_confirmation}
                             onChange={handleChange}
                             placeholder="************"
+                            required
                         />
-                        {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
+                        {errors.password_confirmation && <div className="error-message">{errors.password_confirmation}</div>}
                     </div>
                     <button type="submit" className="sign-up-button">
                         SIGN UP

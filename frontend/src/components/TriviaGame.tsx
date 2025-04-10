@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '../config/axios';
 import './TriviaGame.css';
 import logo from '../logo.png';
 
@@ -15,6 +16,7 @@ interface Question {
 type Difficulty = 'easy' | 'medium' | 'hard';
 
 const TriviaGame: React.FC = () => {
+    const navigate = useNavigate();
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [score, setScore] = useState<number>(0);
@@ -26,6 +28,13 @@ const TriviaGame: React.FC = () => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
     const [scoreUpdated, setScoreUpdated] = useState<boolean>(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const fetchQuestions = async () => {
         try {
