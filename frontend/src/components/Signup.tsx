@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'; // Reutilizamos los estilos de Login
+import './AuthStyles.css'; // Usamos el nuevo archivo de estilos compartidos
 
 const Signup: React.FC = () => {
     const navigate = useNavigate();
