@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login: React.FC = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -19,6 +21,10 @@ const Login: React.FC = () => {
         e.preventDefault();
         // Aquí iría la lógica de inicio de sesión
         console.log('Iniciando sesión:', formData);
+    };
+
+    const goToSignup = () => {
+        navigate('/signup');
     };
 
     return (
@@ -51,7 +57,7 @@ const Login: React.FC = () => {
                     </button>
                 </form>
                 <p className="login-text">¿No tienes una cuenta?</p>
-                <button className="sign-up-button">
+                <button className="sign-up-button" onClick={goToSignup}>
                     SIGN UP
                 </button>
             </div>

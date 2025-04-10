@@ -510,4 +510,11 @@ body {
 
 .login-button:hover {
     background: rgba(200, 44, 44, 0.1);
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    text-align: left;
 } 
