@@ -3,8 +3,7 @@ import './Login.css';
 
 const Login: React.FC = () => {
     const [formData, setFormData] = useState({
-        user: '',
-        mail: '',
+        username: '',
         password: ''
     });
 
@@ -18,37 +17,27 @@ const Login: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Aquí iría la lógica de registro
-        console.log('Form submitted:', formData);
+        // Aquí iría la lógica de inicio de sesión
+        console.log('Iniciando sesión:', formData);
     };
 
     return (
         <div className="login-container">
             <div className="login-card">
-                <h1 className="login-title">SIGN IN</h1>
+                <h1 className="login-title">Log In</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>User</label>
+                        <label>Nombre de usuario</label>
                         <input
                             type="text"
-                            name="user"
-                            value={formData.user}
+                            name="username"
+                            value={formData.username}
                             onChange={handleChange}
                             placeholder="var_mir1"
                         />
                     </div>
                     <div className="form-group">
-                        <label>Mail</label>
-                        <input
-                            type="email"
-                            name="mail"
-                            value={formData.mail}
-                            onChange={handleChange}
-                            placeholder="example@gmail.com"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Password</label>
+                        <label>Contraseña</label>
                         <input
                             type="password"
                             name="password"
@@ -57,13 +46,13 @@ const Login: React.FC = () => {
                             placeholder="************"
                         />
                     </div>
-                    <button type="submit" className="sign-up-button">
-                        SIGN UP
+                    <button type="submit" className="login-button">
+                        LOG IN
                     </button>
                 </form>
-                <p className="login-text">Do you have an account?</p>
-                <button className="login-button">
-                    LOG IN
+                <p className="login-text">¿No tienes una cuenta?</p>
+                <button className="sign-up-button">
+                    SIGN UP
                 </button>
             </div>
         </div>
