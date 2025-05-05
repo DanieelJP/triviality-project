@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './styles/global.css';
+import './styles/components/Home.css';
+import './styles/components/TriviaGame.css';
+import './styles/components/Auth.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

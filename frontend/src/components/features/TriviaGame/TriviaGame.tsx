@@ -1,19 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../config/axios';
-import './TriviaGame.css';
-import logo from '../logo.png';
-
-interface Question {
-    category: string;
-    type: string;
-    difficulty: string;
-    question: string;
-    correct_answer: string;
-    incorrect_answers: string[];
-}
-
-type Difficulty = 'easy' | 'medium' | 'hard';
+import { Question, Difficulty } from '../../../types/trivia';
+import { triviaService } from '../../../services/triviaService';
+import { Logo } from '../../common/Logo';
+import '../../../styles/components/TriviaGame.css';
 
 const TriviaGame: React.FC = () => {
     const navigate = useNavigate();
@@ -39,23 +29,13 @@ const TriviaGame: React.FC = () => {
     const fetchQuestions = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/trivia/questions', {
-                params: {
-                    amount: 10,
-                    difficulty: selectedDifficulty
-                }
-            });
-            
-            if (response.data && response.data.results) {
-                setQuestions(response.data.results);
-                setError('');
-                setGameStarted(true);
-            } else {
-                setError('No se pudieron cargar las preguntas');
-            }
-            setLoading(false);
+            const results = await triviaService.getQuestions(10, selectedDifficulty);
+            setQuestions(results);
+            setError('');
+            setGameStarted(true);
         } catch (err) {
             setError('Error al cargar las preguntas');
+        } finally {
             setLoading(false);
         }
     };
@@ -71,7 +51,6 @@ const TriviaGame: React.FC = () => {
             setTimeout(() => setScoreUpdated(false), 500);
         }
 
-        // Esperar un momento para mostrar la respuesta correcta
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         setSelectedAnswer(null);
@@ -93,16 +72,10 @@ const TriviaGame: React.FC = () => {
         setQuestions([]);
     };
 
-    const renderLogo = (inGame: boolean = false) => (
-        <div className={`logo-container ${inGame ? 'in-game' : ''}`}>
-            <img src={logo} alt="Triviality Logo" className="logo-image" />
-        </div>
-    );
-
     if (loading) return (
         <>
             <div className="loading-text">Cargando preguntas...</div>
-            {renderLogo()}
+            <Logo />
         </>
     );
 
@@ -114,7 +87,7 @@ const TriviaGame: React.FC = () => {
                     Reintentar
                 </button>
             </div>
-            {renderLogo()}
+            <Logo />
         </>
     );
 
@@ -147,7 +120,7 @@ const TriviaGame: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                {renderLogo()}
+                <Logo />
             </>
         );
     }
@@ -166,7 +139,7 @@ const TriviaGame: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                {renderLogo()}
+                <Logo />
             </>
         );
     }
@@ -219,7 +192,7 @@ const TriviaGame: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {renderLogo(true)}
+            <Logo inGame={true} />
         </>
     );
 };
