@@ -8,8 +8,8 @@ const Home: React.FC = () => {
     return (
         <div className="home-container">
             <div className="home-content">
-                <h1>¡Bienvenido a Triviality!</h1>
-                <p>El juego de preguntas y respuestas más divertido</p>
+                <h1 className="home-title">¡Bienvenido a Triviality!</h1>
+                <p className="home-subtitle">El juego de preguntas y respuestas más divertido</p>
                 <div className="button-container">
                     <button onClick={() => navigate('/login')} className="home-button">
                         Iniciar Sesión
