@@ -25,7 +25,7 @@ const Signup: React.FC = () => {
         try {
             const response = await axios.post('/api/register', formData);
             localStorage.setItem('token', response.data.token);
-            navigate('/trivia');
+            navigate('/dashboard');
         } catch (err) {
             setError('Error al registrar usuario');
         }

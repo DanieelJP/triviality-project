@@ -49,7 +49,7 @@ export const useAuth = () => {
       const response = await axios.post('/api/login', data);
       localStorage.setItem('token', response.data.token);
       setUser(response.data.user);
-      navigate('/trivia');
+      navigate('/dashboard');
       return true;
     } catch (err) {
       setError('Credenciales inválidas');
@@ -63,7 +63,7 @@ export const useAuth = () => {
       const response = await axios.post('/api/register', data);
       localStorage.setItem('token', response.data.token);
       setUser(response.data.user);
-      navigate('/trivia');
+      navigate('/dashboard');
       return true;
     } catch (err) {
       setError('Error al registrar usuario');

@@ -23,7 +23,7 @@ const Login: React.FC = () => {
         try {
             const response = await axios.post('/api/login', formData);
             localStorage.setItem('token', response.data.token);
-            navigate('/trivia');
+            navigate('/dashboard');
         } catch (err) {
             setError('Credenciales inválidas');
         }

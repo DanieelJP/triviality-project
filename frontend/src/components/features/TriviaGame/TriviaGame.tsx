@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Question, Difficulty } from '../../../types/trivia';
 import { triviaService } from '../../../services/triviaService';
-import { Logo } from '../../common/Logo';
+import logo from '../../../assets/logo.png';
 import '../../../styles/components/TriviaGame.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faHome } from '@fortawesome/free-solid-svg-icons';
 
 const TriviaGame: React.FC = () => {
     const navigate = useNavigate();
@@ -75,6 +77,9 @@ const TriviaGame: React.FC = () => {
     if (loading) return (
         <>
             <div className="trivia-container">
+                <Link to="/dashboard" className="back-button">
+                    <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                </Link>
                 <div className="trivia-card">
                     <h2 className="trivia-title">Preparando tus preguntas</h2>
                     <div className="loader-container">
@@ -85,13 +90,18 @@ const TriviaGame: React.FC = () => {
                     </p>
                 </div>
             </div>
-            <Logo />
+            <div className="logo-center">
+                <img src={logo} alt="Triviality Logo" className="triviality-logo" />
+            </div>
         </>
     );
 
     if (error) return (
         <>
             <div className="trivia-container">
+                <Link to="/dashboard" className="back-button">
+                    <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                </Link>
                 <div className="trivia-card">
                     <h2 className="trivia-title">Oops! Algo salió mal</h2>
                     <p className="error-text" style={{ textAlign: 'center', marginBottom: '2rem', color: '#555' }}>
@@ -102,7 +112,9 @@ const TriviaGame: React.FC = () => {
                     </button>
                 </div>
             </div>
-            <Logo />
+            <div className="logo-center">
+                <img src={logo} alt="Triviality Logo" className="triviality-logo" />
+            </div>
         </>
     );
 
@@ -110,6 +122,9 @@ const TriviaGame: React.FC = () => {
         return (
             <>
                 <div className="trivia-container">
+                    <Link to="/dashboard" className="back-button">
+                        <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                    </Link>
                     <div className="trivia-card">
                         <h2 className="trivia-title">¡Bienvenido a Triviality!</h2>
                         <div className="difficulty-section">
@@ -135,7 +150,9 @@ const TriviaGame: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <Logo />
+                <div className="logo-center">
+                    <img src={logo} alt="Triviality Logo" className="triviality-logo" />
+                </div>
             </>
         );
     }
@@ -165,6 +182,9 @@ const TriviaGame: React.FC = () => {
         return (
             <>
                 <div className="trivia-container">
+                    <Link to="/dashboard" className="back-button">
+                        <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                    </Link>
                     <div className="trivia-card">
                         <div className="results-container">
                             <h2 className="results-heading">¡Juego terminado!</h2>
@@ -192,7 +212,9 @@ const TriviaGame: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <Logo />
+                <div className="logo-center">
+                    <img src={logo} alt="Triviality Logo" className="triviality-logo" />
+                </div>
             </>
         );
     }
@@ -204,6 +226,9 @@ const TriviaGame: React.FC = () => {
     return (
         <>
             <div className="trivia-container">
+                <Link to="/dashboard" className="back-button">
+                    <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                </Link>
                 <div className="trivia-card">
                     <div className="game-header">
                         <span className="question-counter">
@@ -245,7 +270,9 @@ const TriviaGame: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Logo inGame={true} />
+            <div className="logo-center">
+                <img src={logo} alt="Triviality Logo" className="triviality-logo game-logo" />
+            </div>
         </>
     );
 };
