@@ -138,7 +138,7 @@ const TriviaGame: React.FC = () => {
                                         onClick={() => setSelectedDifficulty(difficulty)}
                                         className={`difficulty-button ${selectedDifficulty === difficulty ? 'selected' : ''}`}
                                     >
-                                        {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                                        {difficulty.toUpperCase()}
                                     </button>
                                 ))}
                             </div>
@@ -270,7 +270,7 @@ const TriviaGame: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div className="logo-center">
+            <div className="logo-center game-logo-container">
                 <img src={logo} alt="Triviality Logo" className="triviality-logo game-logo" />
             </div>
         </>

@@ -240,7 +240,7 @@ const Dashboard: React.FC = () => {
         <div className="dashboard-container">
             <aside className="dashboard-sidebar">
                 <div className="sidebar-header">
-                    <div className="dashboard-logo" title="Triviality - Juego de preguntas y respuestas">
+                    <div className="dashboard-logo">
                         <img src={logo} alt="Triviality" className="dashboard-logo-image" />
                     </div>
                     <h2>Triviality</h2>
@@ -266,7 +266,7 @@ const Dashboard: React.FC = () => {
                         <span className="logout-icon">
                             <FontAwesomeIcon icon={faSignOutAlt} />
                         </span>
-                        <span>Cerrar sesión</span>
+                        <span className="logout-text">Cerrar sesión</span>
                     </button>
                 </div>
             </aside>
