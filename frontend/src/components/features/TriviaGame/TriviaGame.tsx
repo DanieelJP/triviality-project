@@ -74,18 +74,33 @@ const TriviaGame: React.FC = () => {
 
     if (loading) return (
         <>
-            <div className="loading-text">Cargando preguntas...</div>
+            <div className="trivia-container">
+                <div className="trivia-card">
+                    <h2 className="trivia-title">Preparando tus preguntas</h2>
+                    <div className="loader-container">
+                        <div className="loader"></div>
+                    </div>
+                    <p className="text-center" style={{ marginTop: '1rem', color: '#555' }}>
+                        Estamos seleccionando las mejores preguntas para ti...
+                    </p>
+                </div>
+            </div>
             <Logo />
         </>
     );
 
     if (error) return (
         <>
-            <div className="error-container">
-                <p className="error-text">{error}</p>
-                <button className="retry-button" onClick={fetchQuestions}>
-                    Reintentar
-                </button>
+            <div className="trivia-container">
+                <div className="trivia-card">
+                    <h2 className="trivia-title">Oops! Algo salió mal</h2>
+                    <p className="error-text" style={{ textAlign: 'center', marginBottom: '2rem', color: '#555' }}>
+                        {error}
+                    </p>
+                    <button className="retry-button" onClick={fetchQuestions}>
+                        Reintentar
+                    </button>
+                </div>
             </div>
             <Logo />
         </>
@@ -113,7 +128,7 @@ const TriviaGame: React.FC = () => {
                                 ))}
                             </div>
                         </div>
-                        <div className="text-center">
+                        <div className="button-container">
                             <button className="start-button" onClick={fetchQuestions}>
                                 Play
                             </button>
@@ -128,15 +143,53 @@ const TriviaGame: React.FC = () => {
     if (questions.length === 0) return null;
     
     if (showScore) {
+        // Calcular estadísticas
+        const correctAnswers = score;
+        const incorrectAnswers = questions.length - score;
+        const percentage = Math.round((score / questions.length) * 100);
+        
+        // Determinar mensaje según el porcentaje
+        let message = '';
+        if (percentage >= 90) {
+            message = '¡Excelente! Eres un maestro del trivia.';
+        } else if (percentage >= 70) {
+            message = '¡Muy bien! Tienes un gran conocimiento.';
+        } else if (percentage >= 50) {
+            message = 'Buen trabajo. Tienes un conocimiento decente.';
+        } else if (percentage >= 30) {
+            message = 'No está mal, pero puedes mejorar.';
+        } else {
+            message = 'Sigue practicando para mejorar tu puntuación.';
+        }
+        
         return (
             <>
                 <div className="trivia-container">
-                    <div className="trivia-card score-screen">
-                        <h2 className="score-title">¡Juego terminado!</h2>
-                        <p className="score-text">Tu puntuación: {score} de {questions.length}</p>
-                        <button className="play-again-button" onClick={restartGame}>
-                            Jugar de nuevo
-                        </button>
+                    <div className="trivia-card">
+                        <div className="results-container">
+                            <h2 className="results-heading">¡Juego terminado!</h2>
+                            <div className="results-score">{percentage}%</div>
+                            <p className="results-message">{message}</p>
+                            
+                            <div className="score-details">
+                                <div className="score-detail">
+                                    <div className="score-detail-label">Total</div>
+                                    <div className="score-detail-value">{questions.length}</div>
+                                </div>
+                                <div className="score-detail">
+                                    <div className="score-detail-label">Correctas</div>
+                                    <div className="score-detail-value correct">{correctAnswers}</div>
+                                </div>
+                                <div className="score-detail">
+                                    <div className="score-detail-label">Incorrectas</div>
+                                    <div className="score-detail-value incorrect">{incorrectAnswers}</div>
+                                </div>
+                            </div>
+                            
+                            <button className="play-again-button" onClick={restartGame}>
+                                Jugar de nuevo
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <Logo />

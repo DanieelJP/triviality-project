@@ -1,10 +1,14 @@
+/* Variables para el fondo */
+:root {
+    --color-red-dark: #950e0e;
+    --color-red-light: #c62828;
+    --color-red-medium: #b71c1c;
+}
+
 .home-container {
     min-height: 100vh;
     width: 100%;
-    background-image: url("../../assets/BG-Base.jpg");
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: linear-gradient(135deg, var(--color-red-dark) 0%, var(--color-red-medium) 50%, var(--color-red-light) 100%);
     background-attachment: fixed;
     display: flex;
     justify-content: center;
@@ -12,30 +16,43 @@
     box-sizing: border-box;
     padding: 2rem;
     position: relative;
+    overflow: hidden;
+}
+
+/* Quitamos las capas decorativas */
+.home-container::before {
+    content: none;
+}
+
+.home-container::after {
+    content: none;
 }
 
 .home-content {
-    max-width: 800px;
+    max-width: 600px;
     width: 100%;
     text-align: center;
-    color: white;
     position: relative;
     z-index: 2;
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius:.75rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .home-title {
-    font-size: 3.8rem;
+    font-size: 3.2rem;
     font-weight: 800;
-    margin-bottom: 2.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    color: white;
+    margin-bottom: 1.5rem;
+    color: var(--color-red-medium);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .home-subtitle {
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     margin-bottom: 2.5rem;
-    opacity: 0.9;
+    color: #444;
 }
 
 .home-features {
@@ -82,34 +99,34 @@
 }
 
 .home-button {
-    background: white;
-    color: #C82C2C;
-    padding: 1rem 3rem;
-    border-radius: 0.75rem;
-    font-weight: bold;
+    padding: 1rem 2rem;
+    background: var(--color-red-medium);
+    color: white;
     border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 1.2rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(183, 28, 28, 0.25);
 }
 
 .home-button:hover {
-    background-color: #f3f3f3;
+    background: var(--color-red-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 15px rgba(183, 28, 28, 0.35);
 }
 
 .home-button.secondary {
     background: transparent;
-    color: white;
-    border: 2px solid white;
+    color: var(--color-red-medium);
+    border: 1px solid var(--color-red-medium);
 }
 
 .home-button.secondary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(183, 28, 28, 0.05);
     transform: translateY(-2px);
 }
 
