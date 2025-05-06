@@ -1,0 +1,237 @@
+.auth-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #6e0000, #ff0000);
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(139, 0, 0, 0.1) 25%, 
+        transparent 25%, 
+        transparent 50%, 
+        rgba(139, 0, 0, 0.1) 50%, 
+        rgba(139, 0, 0, 0.1) 75%, 
+        transparent 75%, 
+        transparent
+    );
+    background-size: 100px 100px;
+    opacity: 0.1;
+    z-index: 1;
+    animation: moveBackground 20s linear infinite;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 100px 100px;
+    }
+}
+
+.auth-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+}
+
+.auth-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #333;
+    background: #F5F5F5;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #C82C2C;
+    background: white;
+}
+
+.auth-button {
+    width: 100%;
+    padding: 1rem;
+    background: #C82C2C;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.auth-button:hover {
+    background: #A52424;
+}
+
+.auth-link {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.auth-link span {
+    color: #C82C2C;
+    cursor: pointer;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.auth-link span:hover {
+    color: #A52424;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    text-align: left;
+}
+
+/* Media queries para responsive design */
+@media screen and (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        max-width: 100%;
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .auth-card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-group input {
+        padding: 0.7rem;
+    }
+    
+    .auth-button {
+        padding: 0.85rem;
+    }
+}
+
+/* Ajustes específicos para móviles pequeños */
+@media screen and (max-width: 480px) {
+    .auth-card {
+        padding: 1.25rem;
+        margin: 0 0.5rem;
+    }
+    
+    .auth-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-group label {
+        font-size: 0.85rem;
+    }
+    
+    .form-group input {
+        padding: 0.65rem;
+        font-size: 0.95rem;
+    }
+    
+    .auth-button {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .auth-link {
+        font-size: 0.85rem;
+        margin: 0.75rem 0;
+    }
+    
+    .error-message {
+        font-size: 0.75rem;
+    }
+}
+
+/* Ajustar para orientación vertical y horizontal en dispositivos móviles */
+@media screen and (max-height: 600px) {
+    .auth-container {
+        align-items: flex-start;
+        padding-top: 2rem;
+        overflow-y: auto;
+    }
+    
+    .auth-card {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Mejorar usabilidad para dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+    .form-group input {
+        height: 44px; /* Altura mínima recomendada para elementos táctiles */
+    }
+    
+    .auth-button {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+    
+    /* Aumentar espacio entre elementos para evitar toques accidentales */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+} 

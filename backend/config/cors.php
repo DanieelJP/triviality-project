@@ -19,7 +19,12 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://triviality.local'],
+    'allowed_origins' => [
+        'http://localhost:3000',
+        'http://192.168.238.0:3000',
+        'http://192.168.11.107:3000',
+        'http://192.168.237.91:3000',
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +34,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];

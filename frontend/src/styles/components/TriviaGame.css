@@ -1,0 +1,724 @@
+/* Variables para el fondo */
+:root {
+    --color-red-dark: #950e0e;
+    --color-red-light: #c62828;
+    --color-red-medium: #b71c1c;
+}
+
+html, body {
+    overflow-x: hidden;
+    height: 100%;
+}
+
+body {
+    background: linear-gradient(135deg, var(--color-red-dark) 0%, var(--color-red-medium) 50%, var(--color-red-light) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+}
+
+/* Quitamos las capas decorativas */
+body::before {
+    content: none;
+}
+
+body::after {
+    content: none;
+}
+
+.trivia-container {
+    max-width: 42rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Estilo para el botón de volver */
+.back-button {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--color-red-medium);
+    border: 1px solid rgba(183, 28, 28, 0.3);
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-decoration: none;
+}
+
+.back-button:hover {
+    background-color: var(--color-red-medium);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+}
+
+.trivia-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.trivia-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-red-dark), var(--color-red-medium), var(--color-red-light));
+    opacity: 0.7;
+}
+
+/* Estilos para el logo centrado */
+.logo-center {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem 0;
+    position: relative;
+}
+
+/* Eliminamos el efecto de brillo detrás del logo */
+.logo-center::before {
+    content: none;
+}
+
+.triviality-logo {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+    transition: all 0.3s ease;
+    animation: float 6s ease-in-out infinite;
+    transform-origin: center;
+    position: relative;
+    z-index: 2;
+}
+
+.triviality-logo.game-logo {
+    width: 140px;
+    height: 140px;
+    animation: float-game 4s ease-in-out infinite;
+}
+
+.triviality-logo:hover {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+    transform: scale(1.05);
+    animation-play-state: paused;
+}
+
+/* Animación de flotación para el logo - Efecto aumentado */
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+    }
+    25% {
+        transform: translateY(-18px) rotate(3deg) scale(1.05);
+        filter: drop-shadow(0 22px 20px rgba(0, 0, 0, 0.2));
+    }
+    50% {
+        transform: translateY(-25px) rotate(0deg) scale(1.08);
+        filter: drop-shadow(0 30px 25px rgba(0, 0, 0, 0.15));
+    }
+    75% {
+        transform: translateY(-18px) rotate(-3deg) scale(1.05);
+        filter: drop-shadow(0 22px 20px rgba(0, 0, 0, 0.2));
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+    }
+}
+
+/* Animación para el logo dentro del juego - Más notoria */
+@keyframes float-game {
+    0% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+    }
+    50% {
+        transform: translateY(-15px) rotate(2deg) scale(1.06);
+        filter: drop-shadow(0 25px 20px rgba(0, 0, 0, 0.15));
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+    }
+}
+
+.trivia-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--color-red-medium);
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.5px;
+}
+
+.difficulty-section {
+    margin-bottom: 2rem;
+    background: #f5f5f5;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #e0e0e0;
+}
+
+.difficulty-label {
+    display: block;
+    color: #555;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.difficulty-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    justify-content: center;
+}
+
+.difficulty-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #f0f0f0;
+    border: 1px solid #e0e0e0;
+    color: #555;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.difficulty-button:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.difficulty-button.selected {
+    background-color: var(--color-red-medium);
+    color: white;
+    border-color: var(--color-red-dark);
+    box-shadow: 0 2px 8px rgba(183, 28, 28, 0.3);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.start-button {
+    width: 100%;
+    max-width: 300px;
+    padding: 1rem;
+    background: var(--color-red-medium);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(183, 28, 28, 0.25);
+    display: block;
+    margin: 0 auto;
+}
+
+.start-button:hover {
+    background: var(--color-red-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(183, 28, 28, 0.35);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #555;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 0.75rem;
+    border: 1px solid #e0e0e0;
+}
+
+.question-counter {
+    font-size: 0.875rem;
+    color: #555;
+}
+
+.score-counter {
+    font-size: 1rem;
+    font-weight: bold;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.score-counter.score-updated {
+    animation: celebration 0.5s ease;
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #2e7d32;
+}
+
+.tags-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.category-tag, .difficulty-tag {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.category-tag {
+    color: white;
+    background-color: var(--color-red-medium);
+    border: 1px solid var(--color-red-dark);
+}
+
+.difficulty-tag {
+    color: #333;
+    background-color: #f0f0f0;
+    border: 1px solid #e0e0e0;
+}
+
+.question-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+.answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.answer-button {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.5rem;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.answer-button:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    border-color: #ccc;
+}
+
+.answer-button.correct {
+    background-color: rgba(39, 174, 96, 0.1);
+    color: #2e7d32;
+    border-color: rgba(39, 174, 96, 0.3);
+    animation: correctAnswer 1s;
+}
+
+.answer-button.incorrect {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.3);
+    animation: shake 0.5s;
+}
+
+.loading-text {
+    text-align: center;
+    padding: 2rem;
+    padding-top: 30vh;
+    color: white;
+    font-size: 1.25rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.error-container {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(200, 44, 44, 0.1);
+    border-radius: 1rem;
+    margin: 2rem auto;
+    max-width: 32rem;
+}
+
+.error-text {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.retry-button, .play-again-button {
+    width: 100%;
+    max-width: 300px;
+    padding: 1rem;
+    background: var(--color-red-medium);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(183, 28, 28, 0.25);
+    margin: 0 auto;
+    display: block;
+}
+
+.retry-button:hover, .play-again-button:hover {
+    background: var(--color-red-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(183, 28, 28, 0.35);
+}
+
+.score-screen {
+    text-align: center;
+    padding: 2rem;
+}
+
+.score-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.score-text {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Pantalla de resultados */
+.results-container {
+    text-align: center;
+    padding: 2rem;
+    background: #f5f5f5;
+    border-radius: 1rem;
+    margin-top: 2rem;
+    border: 1px solid #e0e0e0;
+}
+
+.results-heading {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-red-medium);
+    margin-bottom: 1rem;
+}
+
+.results-score {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+    margin: 1.5rem 0;
+}
+
+.results-message {
+    font-size: 1.25rem;
+    color: #555;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.score-details {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.score-detail {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    min-width: 100px;
+    border: 1px solid #e0e0e0;
+}
+
+.score-detail-label {
+    font-size: 0.875rem;
+    color: #777;
+    margin-bottom: 0.5rem;
+}
+
+.score-detail-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.score-detail-value.correct {
+    color: #2e7d32;
+}
+
+.score-detail-value.incorrect {
+    color: #c0392b;
+}
+
+/* Animaciones */
+@keyframes correctAnswer {
+    0% {
+        background-color: rgba(39, 174, 96, 0.1);
+    }
+    50% {
+        background-color: rgba(39, 174, 96, 0.3);
+    }
+    100% {
+        background-color: rgba(39, 174, 96, 0.1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-10px);
+    }
+    40% {
+        transform: translateX(10px);
+    }
+    60% {
+        transform: translateX(-10px);
+    }
+    80% {
+        transform: translateX(10px);
+    }
+}
+
+@keyframes celebration {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.answer-button:nth-child(1) { animation-delay: 0.1s; }
+.answer-button:nth-child(2) { animation-delay: 0.2s; }
+.answer-button:nth-child(3) { animation-delay: 0.3s; }
+.answer-button:nth-child(4) { animation-delay: 0.4s; }
+
+/* Loader */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid var(--color-red-medium);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .trivia-container {
+        padding: 1.5rem;
+    }
+    
+    .difficulty-buttons {
+        gap: 0.6rem;
+    }
+    
+    .difficulty-button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.8rem;
+        min-width: 90px;
+    }
+    
+    .back-button {
+        top: 1rem;
+        left: 1rem;
+        padding: 0.6rem 1rem;
+        min-width: 40px;
+        min-height: 40px;
+    }
+    
+    .back-button span {
+        display: none;
+    }
+    
+    .triviality-logo {
+        width: 140px;
+        height: 140px;
+        animation: float-mobile 5s ease-in-out infinite;
+    }
+    
+    .triviality-logo.game-logo {
+        width: 120px;
+        height: 120px;
+        animation: float-game-mobile 4s ease-in-out infinite;
+    }
+    
+    /* Animación para móviles mejorada */
+    @keyframes float-mobile {
+        0% {
+            transform: translateY(0px) rotate(0deg) scale(1);
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
+        }
+        50% {
+            transform: translateY(-15px) rotate(2deg) scale(1.05);
+            filter: drop-shadow(0 20px 18px rgba(0, 0, 0, 0.15));
+        }
+        100% {
+            transform: translateY(0px) rotate(0deg) scale(1);
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
+        }
+    }
+    
+    /* Animación más ligera para el logo en el juego en móviles */
+    @keyframes float-game-mobile {
+        0% {
+            transform: translateY(0px) scale(1) rotate(0deg);
+            filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.25));
+        }
+        50% {
+            transform: translateY(-12px) scale(1.04) rotate(1.5deg);
+            filter: drop-shadow(0 18px 15px rgba(0, 0, 0, 0.15));
+        }
+        100% {
+            transform: translateY(0px) scale(1) rotate(0deg);
+            filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.25));
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .trivia-container {
+        padding: 1rem;
+    }
+    
+    .trivia-card {
+        padding: 1.5rem;
+    }
+    
+    .difficulty-section {
+        padding: 1rem;
+    }
+    
+    .difficulty-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    .difficulty-button {
+        width: 100%;
+        max-width: 200px;
+        padding: 0.8rem 1rem;
+        margin: 0 auto;
+    }
+    
+    .logo-container {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .triviality-logo {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .triviality-logo.game-logo {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+/* Contenedor centrado para el logo */
+.trivia-container::after {
+    content: none;
+} 
