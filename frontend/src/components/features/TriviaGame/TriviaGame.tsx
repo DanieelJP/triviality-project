@@ -20,6 +20,7 @@ const TriviaGame: React.FC = () => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
     const [scoreUpdated, setScoreUpdated] = useState<boolean>(false);
+    const [answersOrder, setAnswersOrder] = useState<{ [key: number]: string[] }>({});
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -32,6 +33,16 @@ const TriviaGame: React.FC = () => {
         try {
             setLoading(true);
             const results = await triviaService.getQuestions(10, selectedDifficulty);
+            
+            // Preordena las respuestas para cada pregunta y guarda el orden
+            const orderMap: { [key: number]: string[] } = {};
+            results.forEach((question, index) => {
+                const allAnswers = [...question.incorrect_answers, question.correct_answer];
+                // Usamos un orden aleatorio pero fijo para cada pregunta
+                orderMap[index] = allAnswers.sort(() => Math.random() - 0.5);
+            });
+            
+            setAnswersOrder(orderMap);
             setQuestions(results);
             setError('');
             setGameStarted(true);
@@ -220,8 +231,8 @@ const TriviaGame: React.FC = () => {
     }
 
     const currentQ = questions[currentQuestion];
-    const allAnswers = [...currentQ.incorrect_answers, currentQ.correct_answer]
-        .sort(() => Math.random() - 0.5);
+    // En lugar de ordenar las respuestas aquí, usamos el orden pre-establecido
+    const allAnswers = answersOrder[currentQuestion] || [];
 
     return (
         <>

@@ -370,22 +370,21 @@ body::after {
 
 .answer-button:hover {
     background: #f0f0f0;
-    transform: translateY(-2px);
     border-color: #ccc;
 }
 
 .answer-button.correct {
-    background-color: rgba(39, 174, 96, 0.1);
+    background-color: rgba(39, 174, 96, 0.2);
     color: #2e7d32;
-    border-color: rgba(39, 174, 96, 0.3);
-    animation: correctAnswer 1s;
+    border-color: rgba(39, 174, 96, 0.4);
+    font-weight: bold;
 }
 
 .answer-button.incorrect {
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: rgba(231, 76, 60, 0.2);
     color: #c0392b;
-    border-color: rgba(231, 76, 60, 0.3);
-    animation: shake 0.5s;
+    border-color: rgba(231, 76, 60, 0.4);
+    font-weight: bold;
 }
 
 .loading-text {
@@ -538,19 +537,13 @@ body::after {
 
 @keyframes shake {
     0%, 100% {
-        transform: translateX(0);
+        background-color: rgba(231, 76, 60, 0.1);
     }
-    20% {
-        transform: translateX(-10px);
+    50% {
+        background-color: rgba(231, 76, 60, 0.3);
     }
-    40% {
-        transform: translateX(10px);
-    }
-    60% {
-        transform: translateX(-10px);
-    }
-    80% {
-        transform: translateX(10px);
+    100% {
+        background-color: rgba(231, 76, 60, 0.1);
     }
 }
 
