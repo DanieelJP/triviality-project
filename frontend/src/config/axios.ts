@@ -13,7 +13,7 @@ const getBaseUrl = () => {
     }
 
     // En remoto, usar la IP específica del servidor
-    return 'http://192.168.238.0:8000';
+    return 'http://192.168.236.192:8000';
 };
 
 const API_BASE_URL = getBaseUrl();

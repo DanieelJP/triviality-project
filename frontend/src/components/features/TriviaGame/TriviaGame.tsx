@@ -6,6 +6,7 @@ import logo from '../../../assets/logo.png';
 import '../../../styles/components/TriviaGame.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faHome } from '@fortawesome/free-solid-svg-icons';
+import LoadingScreen from './LoadingScreen';
 
 const TriviaGame: React.FC = () => {
     const navigate = useNavigate();
@@ -86,25 +87,15 @@ const TriviaGame: React.FC = () => {
     };
 
     if (loading) return (
-        <>
-            <div className="trivia-container">
+        <LoadingScreen 
+            isLoading={true} 
+            text="Preparando tus preguntas..." 
+            backButton={
                 <Link to="/dashboard" className="back-button">
                     <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
                 </Link>
-                <div className="trivia-card">
-                    <h2 className="trivia-title">Preparando tus preguntas</h2>
-                    <div className="loader-container">
-                        <div className="loader"></div>
-                    </div>
-                    <p className="text-center" style={{ marginTop: '1rem', color: '#555' }}>
-                        Estamos seleccionando las mejores preguntas para ti...
-                    </p>
-                </div>
-            </div>
-            <div className="logo-center">
-                <img src={logo} alt="Triviality Logo" className="triviality-logo" />
-            </div>
-        </>
+            }
+        />
     );
 
     if (error) return (
