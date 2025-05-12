@@ -48,7 +48,7 @@ const Layout: React.FC<LayoutProps> = ({
         )}
       </main>
       
-      <Footer />
+      <Footer onTabChange={onTabChange} />
     </div>
   );
 };

@@ -5,12 +5,26 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import { 
   faEnvelope, 
-  faQuestion 
+  faQuestion,
+  faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/components/layout/Footer.css';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onTabChange?: (tabId: string) => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
   const currentYear = new Date().getFullYear();
+  
+  const handleTabClick = (tabId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onTabChange) {
+      onTabChange(tabId);
+      // Hacer scroll hacia arriba para mejor experiencia de usuario
+      window.scrollTo(0, 0);
+    }
+  };
   
   return (
     <footer className="main-footer">
@@ -24,10 +38,11 @@ const Footer: React.FC = () => {
           <div className="footer-section">
             <h3>Enlaces Rápidos</h3>
             <ul className="footer-links">
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Inicio</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Jugar</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Clasificación</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Perfil</a></li>
+              <li><a href="#" onClick={(e) => handleTabClick('home', e)}>Inicio</a></li>
+              <li><a href="#" onClick={(e) => handleTabClick('play', e)}>Jugar</a></li>
+              <li><a href="#" onClick={(e) => handleTabClick('leaderboard', e)}>Clasificación</a></li>
+              <li><a href="#" onClick={(e) => handleTabClick('profile', e)}>Perfil</a></li>
+              <li><a href="#" onClick={(e) => handleTabClick('about', e)}>Acerca de</a></li>
             </ul>
           </div>
           
@@ -40,7 +55,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <FontAwesomeIcon icon={faQuestion} />
-                <a href="#" onClick={(e) => e.preventDefault()}>Ayuda y Soporte</a>
+                <a href="#" onClick={(e) => handleTabClick('about', e)}>Ayuda y Soporte</a>
               </li>
             </ul>
           </div>
@@ -48,7 +63,7 @@ const Footer: React.FC = () => {
           <div className="footer-section">
             <h3>Síguenos</h3>
             <div className="social-icons">
-              <a href="https://github.com/DanieelJP/triviality-project" className="social-icon" onClick={(e) => e.preventDefault()}>
+              <a href="https://github.com/DanieelJP/triviality-project" className="social-icon" target="_blank" rel="noopener noreferrer">
                 <FontAwesomeIcon icon={faGithub} />
               </a>
             </div>
@@ -58,8 +73,8 @@ const Footer: React.FC = () => {
         <div className="footer-bottom">
           <p>&copy; {currentYear} Triviality. Todos los derechos reservados.</p>
           <ul className="footer-legal">
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Términos de Servicio</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Política de Privacidad</a></li>
+            <li><a href="#" onClick={(e) => handleTabClick('about', e)}>Términos de Servicio</a></li>
+            <li><a href="#" onClick={(e) => handleTabClick('about', e)}>Política de Privacidad</a></li>
           </ul>
         </div>
       </div>
