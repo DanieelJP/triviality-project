@@ -1033,11 +1033,9 @@
 }
 
 .home-content {
-    display: flex;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-
     gap: 3rem;
     align-items: flex-start;
     justify-content: center;
