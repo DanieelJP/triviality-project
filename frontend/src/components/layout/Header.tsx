@@ -65,13 +65,12 @@ const Header: React.FC<HeaderProps> = ({
             </li>
           </ul>
         </nav>
-        
+        {/* Botón de perfil hecho botón, redireccion a Profile */}
         <div className="header-actions">
-          
-          <div className="user-profile">
-          <div className="user-avatar"><FontAwesomeIcon icon={faUser} /></div>
-            <span className="user-name">{userName}</span>
-          </div>
+          <div className="user-profile" onClick={() => handleTabChange('profile')}>
+            <div className="user-avatar"><FontAwesomeIcon icon={faUser} /></div>
+              <span className="user-name">{userName}</span>
+            </div>
           
           {/* Botón de menú hamburguesa para móviles */}
           <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
