@@ -67,13 +67,9 @@ const Header: React.FC<HeaderProps> = ({
         </nav>
         
         <div className="header-actions">
-          <div className="notification-icon">
-            <FontAwesomeIcon icon={faBell} />
-            <span className="notification-badge">0</span>
-          </div>
           
           <div className="user-profile">
-            <div className="user-avatar">{userName.charAt(0)}</div>
+          <div className="user-avatar"><FontAwesomeIcon icon={faUser} /></div>
             <span className="user-name">{userName}</span>
           </div>
           

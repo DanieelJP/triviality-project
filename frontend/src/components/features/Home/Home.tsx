@@ -6,7 +6,7 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="home-container">
+        <div className="home">
             <div className="home-content">
                 <h1 className="home-title">¡Bienvenido a Triviality!</h1>
                 <p className="home-subtitle">El juego de preguntas y respuestas más divertido</p>

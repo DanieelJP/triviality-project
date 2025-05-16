@@ -5,7 +5,7 @@
     --color-red-medium: #b71c1c;
 }
 
-.home-container {
+.home {
     min-height: 100vh;
     width: 100%;
     background: linear-gradient(135deg, var(--color-red-dark) 0%, var(--color-red-medium) 50%, var(--color-red-light) 100%);
@@ -20,11 +20,11 @@
 }
 
 /* Quitamos las capas decorativas */
-.home-container::before {
+.home::before {
     content: none;
 }
 
-.home-container::after {
+.home::after {
     content: none;
 }
 
