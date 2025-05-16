@@ -2,91 +2,102 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
+use App\Interfaces\TranslationInterface;
 use Illuminate\Support\Facades\Log;
 
-class TranslationService
+class TranslationService implements TranslationInterface
 {
-    private array $servers = [
-        'http://localhost:5000',
-        'https://translate.argosopentech.com',
-        'https://translate.terraprint.co',
-        'https://lt.vern.cc',
-    ];
+    /**
+     * @var TextCleanerService
+     */
+    private TextCleanerService $textCleaner;
 
+    /**
+     * @var TranslationServerService
+     */
+    private TranslationServerService $serverService;
+
+    /**
+     * @var TranslationCacheService
+     */
+    private TranslationCacheService $cacheService;
+
+    /**
+     * @var string
+     */
     private string $targetLang = 'es';
-    private int $timeout = 5;
 
+    /**
+     * Constructor
+     *
+     * @param TextCleanerService $textCleaner
+     * @param TranslationServerService $serverService
+     * @param TranslationCacheService $cacheService
+     */
+    public function __construct(
+        TextCleanerService $textCleaner,
+        TranslationServerService $serverService,
+        TranslationCacheService $cacheService
+    ) {
+        $this->textCleaner = $textCleaner;
+        $this->serverService = $serverService;
+        $this->cacheService = $cacheService;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setTargetLang(string $lang): void
     {
         $this->targetLang = $lang;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function translate(string $text): string
     {
         if (empty($text)) return $text;
 
-        $decodedText = $this->decodeHtmlEntities($text);
+        $decodedText = $this->textCleaner->decodeHtmlEntities($text);
 
-        if ($this->isProperName($decodedText)) {
+        if ($this->textCleaner->isProperName($decodedText)) {
             Log::info("Skipping translation for proper name: $decodedText");
             return $decodedText;
         }
 
-        $cacheKey = 'translation_' . md5($decodedText . $this->targetLang);
-        if (Cache::has($cacheKey)) {
-            return Cache::get($cacheKey);
+        // Buscar en caché
+        if ($cached = $this->cacheService->getFromCache($decodedText, $this->targetLang)) {
+            return $cached;
         }
 
-        // Intentar con servidor local
-        if ($translated = $this->tryTranslateWithServer($this->servers[0], $decodedText, 2)) {
-            Cache::put($cacheKey, $translated, now()->addDays(7));
-            Log::info("Translation successful using local server");
-            return $translated;
+        // Traducir con servidores disponibles
+        $translated = $this->serverService->translateWithAvailableServers(
+            $decodedText, 
+            $this->targetLang
+        );
+
+        if ($translated) {
+            $cleanedTranslation = $this->textCleaner->cleanTranslatedText($translated);
+            $this->cacheService->saveToCache($decodedText, $this->targetLang, $cleanedTranslation);
+            return $cleanedTranslation;
         }
 
-        // Intentar con servidores remotos
-        foreach (array_slice($this->servers, 1) as $server) {
-            if ($translated = $this->tryTranslateWithServer($server, $decodedText, $this->timeout)) {
-                Cache::put($cacheKey, $translated, now()->addDays(7));
-                Log::info("Translation successful using server: $server");
-                return $translated;
-            }
-        }
-
-        Log::error("All translation servers failed for text: " . substr($decodedText, 0, 100));
+        // Si no se pudo traducir, devolver el texto original
         return $decodedText;
     }
 
-    private function tryTranslateWithServer(string $server, string $text, int $timeout): ?string
-    {
-        try {
-            $response = Http::timeout($timeout)
-                ->retry(1, 100)
-                ->post($server . '/translate', [
-                    'q' => $text,
-                    'source' => 'en',
-                    'target' => $this->targetLang,
-                    'format' => 'text',
-                ]);
-
-            if ($response->successful()) {
-                $translated = $response->json()['translatedText'] ?? null;
-                return $translated ? $this->cleanTranslatedText($translated) : null;
-            }
-        } catch (\Exception $e) {
-            Log::warning("Translation failed with $server: " . $e->getMessage());
-        }
-
-        return null;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function translateArray(array $items): array
     {
         return array_map([$this, 'translate'], $items);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function translateQuestion(array $question): array
     {
         return [
@@ -99,6 +110,9 @@ class TranslationService
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function translateQuestionsOptimized(array $questions): array
     {
         if (empty($questions)) return [];
@@ -142,36 +156,23 @@ class TranslationService
 
         foreach ($questions as $q) {
             $result[] = [
-                'category' => $this->cleanTranslatedText($translatedCategories[$q['category']] ?? $q['category']),
+                'category' => $translatedCategories[$q['category']] ?? $q['category'],
                 'type' => $q['type'] ?? '',
-                'difficulty' => $this->cleanTranslatedText($translatedDifficulties[$q['difficulty']] ?? $q['difficulty']),
-                'question' => $this->cleanTranslatedText($translatedTexts[$q['question']] ?? $q['question']),
-                'correct_answer' => $this->cleanTranslatedText($translatedTexts[$q['correct_answer']] ?? $q['correct_answer']),
-                'incorrect_answers' => array_map(fn($ans) => $this->cleanTranslatedText($translatedTexts[$ans] ?? $ans), $q['incorrect_answers'] ?? []),
+                'difficulty' => $translatedDifficulties[$q['difficulty']] ?? $q['difficulty'],
+                'question' => $translatedTexts[$q['question']] ?? $q['question'],
+                'correct_answer' => $translatedTexts[$q['correct_answer']] ?? $q['correct_answer'],
+                'incorrect_answers' => array_map(fn($ans) => $translatedTexts[$ans] ?? $ans, $q['incorrect_answers'] ?? []),
             ];
         }
 
         return $result;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function cleanText(string $text): string
     {
-        return $this->cleanTranslatedText($text);
-    }
-
-    private function decodeHtmlEntities(string $text): string
-    {
-        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    }
-
-    private function isProperName(string $text): bool
-    {
-        // Ejemplo básico: palabra con primera letra mayúscula y sin puntuación
-        return preg_match('/^[A-Z][a-z]+$/', $text) === 1;
-    }
-
-    private function cleanTranslatedText(string $text): string
-    {
-        return strip_tags(trim($text));
+        return $this->textCleaner->cleanTranslatedText($text);
     }
 }

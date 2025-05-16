@@ -4,18 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use App\Services\TranslationService;
+use App\Interfaces\TranslationInterface;
+use App\Services\TranslationCacheService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 class TriviaController extends Controller
 {
     private $baseUrl = 'https://opentdb.com/api.php';
     private $translationService;
+    private $cacheService;
 
-    public function __construct(TranslationService $translationService)
+    public function __construct(TranslationInterface $translationService, TranslationCacheService $cacheService)
     {
         $this->translationService = $translationService;
+        $this->cacheService = $cacheService;
     }
 
     public function getQuestions(Request $request)
@@ -105,10 +107,8 @@ class TriviaController extends Controller
     public function clearTranslationCache()
     {
         try {
-            // Versión simplificada: limpia todo el caché
-            // Nota: En producción, es mejor usar un tag específico para las traducciones
-            // pero flush() es compatible con todos los drivers de caché
-            Cache::flush();
+            // Usar el servicio específico para limpiar el caché de traducciones
+            $entriesRemoved = $this->cacheService->clearAllTranslations();
             
             Log::info("Translation cache cleared successfully");
             
