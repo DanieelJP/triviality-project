@@ -16,7 +16,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
     return (
         <div className="home-container">
-            <div className="dashboard-content-wrapper">
+            
                 <div className="home-content">
                     <div className="welcome-area">
                         <div className="welcome-message">
@@ -64,7 +64,7 @@ const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            
         </div>
     );
 };
