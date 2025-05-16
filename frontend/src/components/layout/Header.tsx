@@ -38,10 +38,6 @@ const Header: React.FC<HeaderProps> = ({
     setMobileMenuOpen(false);
   };
 
-  const goToProfile = () => {
-    handleTabChange('profile');
-  };
-
   return (
     <header className="main-header">
       <div className="header-container">
@@ -76,10 +72,8 @@ const Header: React.FC<HeaderProps> = ({
             <span className="notification-badge">0</span>
           </div>
           
-          <div className="user-profile" onClick={goToProfile}>
-            <div className="user-avatar">
-              <FontAwesomeIcon icon={faUser} />
-            </div>
+          <div className="user-profile">
+            <div className="user-avatar">{userName.charAt(0)}</div>
             <span className="user-name">{userName}</span>
           </div>
           
@@ -112,12 +106,6 @@ const Header: React.FC<HeaderProps> = ({
                 Clasificación
               </button>
             </li>
-            <li className={activeTab === 'profile' ? 'active' : ''}>
-              <button onClick={() => handleTabChange('profile')}>
-                <FontAwesomeIcon icon={faUser} className="mobile-nav-icon" />
-                Perfil
-              </button>
-            </li>
             <li className={activeTab === 'about' ? 'active' : ''}>
               <button onClick={() => handleTabChange('about')}>
                 <FontAwesomeIcon icon={faInfoCircle} className="mobile-nav-icon" />
@@ -134,10 +122,8 @@ const Header: React.FC<HeaderProps> = ({
         </nav>
         
         <div className="mobile-user-info">
-          <div className="mobile-user-profile" onClick={goToProfile}>
-            <div className="user-avatar large">
-              <FontAwesomeIcon icon={faUser} />
-            </div>
+          <div className="mobile-user-profile">
+            <div className="user-avatar large">{userName.charAt(0)}</div>
             <span className="mobile-user-name">{userName}</span>
           </div>
         </div>
