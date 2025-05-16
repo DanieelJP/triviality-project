@@ -1,0 +1,53 @@
+/* Estilos para la página de clasificación */
+.leaderboard-container {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 70px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+.leaderboard-container .dashboard-content-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 1rem auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .leaderboard-container {
+        padding-top: 60px;
+        min-height: calc(100vh - 60px);
+    }
+    
+    .leaderboard-container .dashboard-content-wrapper {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .leaderboard-container {
+        padding-top: 50px;
+        min-height: calc(100vh - 50px);
+    }
+    
+    .leaderboard-container .dashboard-content-wrapper {
+        padding: 1rem 1.25rem;
+        margin: 0.25rem auto;
+        width: calc(100% - 1.5rem);
+        border-radius: 8px;
+    }
+} 

@@ -1,11 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Question, Difficulty } from '../../../types/trivia';
+import { Question, Difficulty, SupportedLanguage } from '../../../types/trivia';
 import { triviaService } from '../../../services/triviaService';
 import logo from '../../../assets/logo.png';
 import '../../../styles/components/TriviaGame.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faHome, faLanguage } from '@fortawesome/free-solid-svg-icons';
+import LoadingScreen from './LoadingScreen';
+
+// Mapa de idiomas para mostrar al usuario
+const languageMap: Record<SupportedLanguage, string> = {
+    'sq': 'Albanés', 
+    'de': 'Alemán', 
+    'ar': 'Árabe', 
+    'az': 'Azerbaiyani', 
+    'eu': 'Vasco', 
+    'bn': 'Bengalí', 
+    'bg': 'Búlgaro', 
+    'cs': 'Checo', 
+    'zh': 'Chino', 
+    'zt': 'Chino (tradicional)', 
+    'ko': 'Coreano', 
+    'da': 'Danés', 
+    'sk': 'Eslovaco', 
+    'sl': 'Esloveno', 
+    'es': 'Español', 
+    'eo': 'Esperanto', 
+    'et': 'Estonio', 
+    'fi': 'Finlandés', 
+    'fr': 'Francés', 
+    'gl': 'Gallego', 
+    'el': 'Griego', 
+    'he': 'Hebreo', 
+    'hi': 'Hindi', 
+    'nl': 'Holandés', 
+    'hu': 'Húngaro', 
+    'id': 'Indonesio', 
+    'en': 'Inglés', 
+    'ga': 'Irlandés', 
+    'it': 'Italiano', 
+    'ja': 'Japonés', 
+    'lv': 'Letón', 
+    'lt': 'Lituano', 
+    'ms': 'Malayo', 
+    'nb': 'Noruego', 
+    'fa': 'Persa', 
+    'pl': 'Polaco', 
+    'pt': 'Portugués', 
+    'pt-BR': 'Portugués (Brasil)', 
+    'ro': 'Rumano', 
+    'ru': 'Ruso', 
+    'sr': 'Serbio', 
+    'sv': 'Sueco', 
+    'tl': 'Tagalo', 
+    'th': 'Tailandés', 
+    'tr': 'Turco', 
+    'uk': 'Ucraniano', 
+    'ur': 'Urdu', 
+    'vi': 'Vietnamita'
+};
 
 const TriviaGame: React.FC = () => {
     const navigate = useNavigate();
@@ -17,21 +70,42 @@ const TriviaGame: React.FC = () => {
     const [error, setError] = useState<string>('');
     const [gameStarted, setGameStarted] = useState<boolean>(false);
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium');
+    const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('es');
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
     const [scoreUpdated, setScoreUpdated] = useState<boolean>(false);
+    const [answersOrder, setAnswersOrder] = useState<{ [key: number]: string[] }>({});
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/login');
         }
+        
+        // Recuperar idioma guardado si existe
+        const savedLanguage = localStorage.getItem('gameLanguage');
+        if (savedLanguage && Object.keys(languageMap).includes(savedLanguage)) {
+            setSelectedLanguage(savedLanguage as SupportedLanguage);
+        }
     }, [navigate]);
 
     const fetchQuestions = async () => {
         try {
             setLoading(true);
-            const results = await triviaService.getQuestions(10, selectedDifficulty);
+            const results = await triviaService.getQuestions(10, selectedDifficulty, selectedLanguage);
+            
+            // Guardamos el idioma seleccionado para futuras partidas
+            localStorage.setItem('gameLanguage', selectedLanguage);
+            
+            // Preordena las respuestas para cada pregunta y guarda el orden
+            const orderMap: { [key: number]: string[] } = {};
+            results.forEach((question, index) => {
+                const allAnswers = [...question.incorrect_answers, question.correct_answer];
+                // Usamos un orden aleatorio pero fijo para cada pregunta
+                orderMap[index] = allAnswers.sort(() => Math.random() - 0.5);
+            });
+            
+            setAnswersOrder(orderMap);
             setQuestions(results);
             setError('');
             setGameStarted(true);
@@ -75,25 +149,15 @@ const TriviaGame: React.FC = () => {
     };
 
     if (loading) return (
-        <>
-            <div className="trivia-container">
+        <LoadingScreen 
+            isLoading={true} 
+            text="Preparando tus preguntas..." 
+            backButton={
                 <Link to="/dashboard" className="back-button">
                     <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
                 </Link>
-                <div className="trivia-card">
-                    <h2 className="trivia-title">Preparando tus preguntas</h2>
-                    <div className="loader-container">
-                        <div className="loader"></div>
-                    </div>
-                    <p className="text-center" style={{ marginTop: '1rem', color: '#555' }}>
-                        Estamos seleccionando las mejores preguntas para ti...
-                    </p>
-                </div>
-            </div>
-            <div className="logo-center">
-                <img src={logo} alt="Triviality Logo" className="triviality-logo" />
-            </div>
-        </>
+            }
+        />
     );
 
     if (error) return (
@@ -143,6 +207,24 @@ const TriviaGame: React.FC = () => {
                                 ))}
                             </div>
                         </div>
+                        
+                        <div className="language-section">
+                            <label className="language-label">
+                                <FontAwesomeIcon icon={faLanguage} /> Idioma de las preguntas:
+                            </label>
+                            <select 
+                                className="language-select"
+                                value={selectedLanguage}
+                                onChange={(e) => setSelectedLanguage(e.target.value as SupportedLanguage)}
+                            >
+                                {Object.entries(languageMap).map(([code, name]) => (
+                                    <option key={code} value={code}>
+                                        {name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        
                         <div className="button-container">
                             <button className="start-button" onClick={fetchQuestions}>
                                 Play
@@ -220,8 +302,8 @@ const TriviaGame: React.FC = () => {
     }
 
     const currentQ = questions[currentQuestion];
-    const allAnswers = [...currentQ.incorrect_answers, currentQ.correct_answer]
-        .sort(() => Math.random() - 0.5);
+    // En lugar de ordenar las respuestas aquí, usamos el orden pre-establecido
+    const allAnswers = answersOrder[currentQuestion] || [];
 
     return (
         <>
@@ -244,6 +326,9 @@ const TriviaGame: React.FC = () => {
                         </span>
                         <span className="difficulty-tag">
                             {currentQ.difficulty.toUpperCase()}
+                        </span>
+                        <span className="language-tag">
+                            <FontAwesomeIcon icon={faLanguage} /> {languageMap[selectedLanguage]}
                         </span>
                     </div>
                     <h2 className="question-text" dangerouslySetInnerHTML={{ __html: currentQ.question }}></h2>

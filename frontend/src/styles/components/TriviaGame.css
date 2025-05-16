@@ -193,6 +193,46 @@ body::after {
     border: 1px solid #e0e0e0;
 }
 
+/* Sección de selección de idioma */
+.language-section {
+    margin-bottom: 2rem;
+    background: #f5f5f5;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #e0e0e0;
+}
+
+.language-label {
+    display: block;
+    color: #555;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.language-select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e0e0e0;
+    background-color: white;
+    color: #333;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.language-select:focus {
+    outline: none;
+    border-color: var(--color-red-medium);
+    box-shadow: 0 0 0 2px rgba(183, 28, 28, 0.2);
+}
+
 .difficulty-label {
     display: block;
     color: #555;
@@ -326,6 +366,17 @@ body::after {
     font-weight: 500;
 }
 
+.language-tag {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #333;
+    background-color: #e9e9e9;
+    border: 1px solid #d0d0d0;
+}
+
 .category-tag {
     color: white;
     background-color: var(--color-red-medium);
@@ -370,22 +421,21 @@ body::after {
 
 .answer-button:hover {
     background: #f0f0f0;
-    transform: translateY(-2px);
     border-color: #ccc;
 }
 
 .answer-button.correct {
-    background-color: rgba(39, 174, 96, 0.1);
+    background-color: rgba(39, 174, 96, 0.2);
     color: #2e7d32;
-    border-color: rgba(39, 174, 96, 0.3);
-    animation: correctAnswer 1s;
+    border-color: rgba(39, 174, 96, 0.4);
+    font-weight: bold;
 }
 
 .answer-button.incorrect {
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: rgba(231, 76, 60, 0.2);
     color: #c0392b;
-    border-color: rgba(231, 76, 60, 0.3);
-    animation: shake 0.5s;
+    border-color: rgba(231, 76, 60, 0.4);
+    font-weight: bold;
 }
 
 .loading-text {
@@ -538,19 +588,13 @@ body::after {
 
 @keyframes shake {
     0%, 100% {
-        transform: translateX(0);
+        background-color: rgba(231, 76, 60, 0.1);
     }
-    20% {
-        transform: translateX(-10px);
+    50% {
+        background-color: rgba(231, 76, 60, 0.3);
     }
-    40% {
-        transform: translateX(10px);
-    }
-    60% {
-        transform: translateX(-10px);
-    }
-    80% {
-        transform: translateX(10px);
+    100% {
+        background-color: rgba(231, 76, 60, 0.1);
     }
 }
 
@@ -674,6 +718,25 @@ body::after {
             filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.25));
         }
     }
+    
+    .language-section {
+        padding: 1.25rem;
+    }
+    
+    .language-label {
+        font-size: 0.9rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .language-select {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+    
+    .language-tag {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -715,6 +778,26 @@ body::after {
     .triviality-logo.game-logo {
         width: 100px;
         height: 100px;
+    }
+    
+    .language-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .language-label {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    .language-select {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+    }
+    
+    .language-tag {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.7rem;
     }
 }
 

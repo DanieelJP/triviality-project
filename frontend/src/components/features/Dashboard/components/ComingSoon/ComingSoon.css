@@ -1,0 +1,69 @@
+/* Sección Coming Soon */
+.coming-soon-section {
+    text-align: center;
+    padding: 3rem 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.coming-soon-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    z-index: -1;
+}
+
+.coming-soon-icon {
+    font-size: 4rem;
+    color: var(--color-red-medium);
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+    display: inline-block;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.coming-soon-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.coming-soon-section p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .coming-soon-section h2 {
+        font-size: 1.6rem;
+    }
+    
+    .coming-soon-section p {
+        font-size: 1rem;
+    }
+    
+    .coming-soon-icon {
+        font-size: 3rem;
+    }
+} 

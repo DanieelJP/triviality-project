@@ -1,10 +1,14 @@
 import axios from '../config/axios';
-import { Question, Difficulty } from '../types/trivia';
+import { Question, Difficulty, SupportedLanguage } from '../types/trivia';
 
 export const triviaService = {
-    async getQuestions(amount: number = 10, difficulty: Difficulty = 'medium'): Promise<Question[]> {
+    async getQuestions(
+        amount: number = 10, 
+        difficulty: Difficulty = 'medium', 
+        language: SupportedLanguage = 'es'
+    ): Promise<Question[]> {
         const response = await axios.get('/api/trivia/questions', {
-            params: { amount, difficulty }
+            params: { amount, difficulty, language }
         });
         return response.data.results;
     }

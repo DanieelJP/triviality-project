@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Rutas de trivia
 Route::get('/trivia/questions', [TriviaController::class, 'getQuestions']);
 Route::get('/trivia/categories', [TriviaController::class, 'getCategories']);
+Route::get('/trivia/clear-translation-cache', [TriviaController::class, 'clearTranslationCache']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
