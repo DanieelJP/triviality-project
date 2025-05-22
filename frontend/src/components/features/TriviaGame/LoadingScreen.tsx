@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { FormattedMessage } from 'react-intl';
 import '../../../styles/components/LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -22,7 +23,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
         </div>
       )}
       <div className="loading-content">
-        <div className="loading-text">{text}</div>
+        <div className="loading-text">
+          {text || <FormattedMessage id="game.loading" defaultMessage="Preparando tus preguntas..." />}
+        </div>
         <div className="loading-waves">
           <div className="wave wave1"></div>
           <div className="wave wave2"></div>

@@ -114,6 +114,29 @@
   align-items: center;
 }
 
+/* Estilos para el selector de idioma compacto */
+.header-language-switcher {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.compact-language-switcher button {
+  transition: all var(--transition-speed) ease;
+  height: 24px;
+}
+
+.compact-language-switcher button:hover {
+  border-color: var(--color-red-medium);
+  background-color: var(--color-accent-light);
+}
+
+/* Estilo para el menú desplegable del selector de idioma */
+.compact-language-switcher div div:hover {
+  background-color: var(--color-accent-light) !important;
+  color: var(--color-red-medium);
+}
+
 .notification-icon {
   font-size: 1.2rem;
   margin-right: 1.5rem;
@@ -327,6 +350,22 @@
   height: 22px;
 }
 
+.mobile-language-switcher {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.mobile-language-switcher .compact-language-switcher button {
+  padding: 6px 12px;
+  font-size: 12px;
+  height: 30px;
+}
+
+.mobile-language-switcher .compact-language-switcher button svg {
+  font-size: 12px;
+}
+
 /* Ajustes responsivos */
 @media (max-width: 992px) {
   .main-header {
@@ -354,6 +393,14 @@
   
   .notification-icon {
     margin-right: 1rem;
+  }
+  
+  .header-language-switcher {
+    margin-right: 10px;
+  }
+  
+  .compact-language-switcher button {
+    height: 22px;
   }
 }
 
@@ -383,5 +430,9 @@
     width: 32px;
     height: 32px;
     font-size: 0.9rem;
+  }
+  
+  .header-language-switcher {
+    display: none; /* Ocultamos en móvil porque ya lo tenemos en el menú desplegable */
   }
 } 

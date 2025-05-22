@@ -282,34 +282,36 @@ body::after {
     text-align: center;
 }
 
+/* Contenedor del botón para centrarlo */
 .button-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 2rem;
     width: 100%;
+    margin-top: 1.5rem;
 }
 
-.start-button {
+/* Estilo específico para el botón Comenzar Juego */
+.start-game-button {
+    display: block;
     width: 100%;
     max-width: 300px;
-    padding: 1rem;
+    padding: 1rem 2rem;
     background: var(--color-red-medium);
     color: white;
     border: none;
     border-radius: 0.75rem;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 4px 10px rgba(183, 28, 28, 0.25);
-    display: block;
-    margin: 0 auto;
+    text-align: center;
 }
 
-.start-button:hover {
+.start-game-button:hover {
     background: var(--color-red-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(183, 28, 28, 0.35);
@@ -650,7 +652,7 @@ body::after {
 
 @media (max-width: 768px) {
     .trivia-container {
-        padding: 1.5rem;
+        padding: 2rem 1rem;
     }
     
     .difficulty-buttons {
@@ -737,11 +739,17 @@ body::after {
         font-size: 0.75rem;
         padding: 0.4rem 0.8rem;
     }
+    
+    .start-game-button {
+        max-width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
     .trivia-container {
-        padding: 1rem;
+        padding: 1rem 0.5rem;
     }
     
     .trivia-card {
@@ -798,6 +806,11 @@ body::after {
     .language-tag {
         font-size: 0.7rem;
         padding: 0.35rem 0.7rem;
+    }
+    
+    .start-game-button {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
     }
 }
 
