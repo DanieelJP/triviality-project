@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Layout } from '../../layout';
 import '../../../styles/components/DashboardBase.css';
 
@@ -12,6 +13,7 @@ import AboutUs from './components/AboutUs';
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const intl = useIntl();
     const [activeTab, setActiveTab] = useState<string>('home');
     const [userName, setUserName] = useState<string>('Usuario');
 
@@ -57,7 +59,14 @@ const Dashboard: React.FC = () => {
             case 'about':
                 return <AboutUs />;
             default:
-                return <div>Selecciona una pestaña</div>;
+                return (
+                    <div>
+                        <FormattedMessage 
+                            id="dashboard.selectTab" 
+                            defaultMessage="Selecciona una pestaña" 
+                        />
+                    </div>
+                );
         }
     };
 

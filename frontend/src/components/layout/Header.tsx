@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faSignOutAlt, 
@@ -13,6 +14,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../assets/logo.png';
 import '../../styles/components/layout/Header.css';
+import CompactLanguageSwitcher from '../common/CompactLanguageSwitcher';
+import { getLocale } from '../../locales';
 
 interface HeaderProps {
   userName: string;
@@ -28,6 +31,19 @@ const Header: React.FC<HeaderProps> = ({
   onLogout 
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentLocale, setCurrentLocale] = useState(getLocale());
+
+  // Actualizar el estado cuando cambie el idioma
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCurrentLocale(getLocale());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -52,30 +68,38 @@ const Header: React.FC<HeaderProps> = ({
         <nav className="header-nav">
           <ul>
             <li className={activeTab === 'home' ? 'active' : ''}>
-              <button onClick={() => handleTabChange('home')}>Inicio</button>
+              <button onClick={() => handleTabChange('home')}>
+                <FormattedMessage id="nav.home" defaultMessage="Inicio" />
+              </button>
             </li>
             <li className={activeTab === 'play' ? 'active' : ''}>
-              <button onClick={() => handleTabChange('play')}>Jugar</button>
+              <button onClick={() => handleTabChange('play')}>
+                <FormattedMessage id="nav.play" defaultMessage="Jugar" />
+              </button>
             </li>
             <li className={activeTab === 'leaderboard' ? 'active' : ''}>
-              <button onClick={() => handleTabChange('leaderboard')}>Clasificación</button>
+              <button onClick={() => handleTabChange('leaderboard')}>
+                <FormattedMessage id="nav.leaderboard" defaultMessage="Clasificación" />
+              </button>
             </li>
             <li className={activeTab === 'about' ? 'active' : ''}>
-              <button onClick={() => handleTabChange('about')}>Acerca de</button>
+              <button onClick={() => handleTabChange('about')}>
+                <FormattedMessage id="nav.about" defaultMessage="Acerca de" />
+              </button>
             </li>
           </ul>
         </nav>
-        
+        {/* Botón de perfil hecho botón, redireccion a Profile */}
         <div className="header-actions">
-          <div className="notification-icon">
-            <FontAwesomeIcon icon={faBell} />
-            <span className="notification-badge">0</span>
+          {/* Selector de idioma compacto */}
+          <div className="header-language-switcher">
+            <CompactLanguageSwitcher currentLocale={currentLocale} />
           </div>
           
-          <div className="user-profile">
-            <div className="user-avatar">{userName.charAt(0)}</div>
-            <span className="user-name">{userName}</span>
-          </div>
+          <div className="user-profile" onClick={() => handleTabChange('profile')}>
+            <div className="user-avatar"><FontAwesomeIcon icon={faUser} /></div>
+              <span className="user-name">{userName}</span>
+            </div>
           
           {/* Botón de menú hamburguesa para móviles */}
           <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
@@ -91,31 +115,31 @@ const Header: React.FC<HeaderProps> = ({
             <li className={activeTab === 'home' ? 'active' : ''}>
               <button onClick={() => handleTabChange('home')}>
                 <FontAwesomeIcon icon={faHome} className="mobile-nav-icon" />
-                Inicio
+                <FormattedMessage id="nav.home" defaultMessage="Inicio" />
               </button>
             </li>
             <li className={activeTab === 'play' ? 'active' : ''}>
               <button onClick={() => handleTabChange('play')}>
                 <FontAwesomeIcon icon={faGamepad} className="mobile-nav-icon" />
-                Jugar
+                <FormattedMessage id="nav.play" defaultMessage="Jugar" />
               </button>
             </li>
             <li className={activeTab === 'leaderboard' ? 'active' : ''}>
               <button onClick={() => handleTabChange('leaderboard')}>
                 <FontAwesomeIcon icon={faTrophy} className="mobile-nav-icon" />
-                Clasificación
+                <FormattedMessage id="nav.leaderboard" defaultMessage="Clasificación" />
               </button>
             </li>
             <li className={activeTab === 'about' ? 'active' : ''}>
               <button onClick={() => handleTabChange('about')}>
                 <FontAwesomeIcon icon={faInfoCircle} className="mobile-nav-icon" />
-                Acerca de
+                <FormattedMessage id="nav.about" defaultMessage="Acerca de" />
               </button>
             </li>
             <li className="mobile-logout">
               <button onClick={onLogout}>
                 <FontAwesomeIcon icon={faSignOutAlt} className="mobile-nav-icon" />
-                Cerrar Sesión
+                <FormattedMessage id="nav.logout" defaultMessage="Cerrar Sesión" />
               </button>
             </li>
           </ul>
@@ -125,6 +149,10 @@ const Header: React.FC<HeaderProps> = ({
           <div className="mobile-user-profile">
             <div className="user-avatar large">{userName.charAt(0)}</div>
             <span className="mobile-user-name">{userName}</span>
+          </div>
+          {/* Selector de idioma en menú móvil */}
+          <div className="mobile-language-switcher">
+            <CompactLanguageSwitcher currentLocale={currentLocale} />
           </div>
         </div>
       </div>

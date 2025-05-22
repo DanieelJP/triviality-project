@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Question, Difficulty, SupportedLanguage } from '../../../types/trivia';
 import { triviaService } from '../../../services/triviaService';
 import logo from '../../../assets/logo.png';
@@ -8,60 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faHome, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from './LoadingScreen';
 
-// Mapa de idiomas para mostrar al usuario
-const languageMap: Record<SupportedLanguage, string> = {
-    'sq': 'Albanés', 
-    'de': 'Alemán', 
-    'ar': 'Árabe', 
-    'az': 'Azerbaiyani', 
-    'eu': 'Vasco', 
-    'bn': 'Bengalí', 
-    'bg': 'Búlgaro', 
-    'cs': 'Checo', 
-    'zh': 'Chino', 
-    'zt': 'Chino (tradicional)', 
-    'ko': 'Coreano', 
-    'da': 'Danés', 
-    'sk': 'Eslovaco', 
-    'sl': 'Esloveno', 
-    'es': 'Español', 
-    'eo': 'Esperanto', 
-    'et': 'Estonio', 
-    'fi': 'Finlandés', 
-    'fr': 'Francés', 
-    'gl': 'Gallego', 
-    'el': 'Griego', 
-    'he': 'Hebreo', 
-    'hi': 'Hindi', 
-    'nl': 'Holandés', 
-    'hu': 'Húngaro', 
-    'id': 'Indonesio', 
-    'en': 'Inglés', 
-    'ga': 'Irlandés', 
-    'it': 'Italiano', 
-    'ja': 'Japonés', 
-    'lv': 'Letón', 
-    'lt': 'Lituano', 
-    'ms': 'Malayo', 
-    'nb': 'Noruego', 
-    'fa': 'Persa', 
-    'pl': 'Polaco', 
-    'pt': 'Portugués', 
-    'pt-BR': 'Portugués (Brasil)', 
-    'ro': 'Rumano', 
-    'ru': 'Ruso', 
-    'sr': 'Serbio', 
-    'sv': 'Sueco', 
-    'tl': 'Tagalo', 
-    'th': 'Tailandés', 
-    'tr': 'Turco', 
-    'uk': 'Ucraniano', 
-    'ur': 'Urdu', 
-    'vi': 'Vietnamita'
-};
-
 const TriviaGame: React.FC = () => {
     const navigate = useNavigate();
+    const intl = useIntl();
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [score, setScore] = useState<number>(0);
@@ -75,6 +25,58 @@ const TriviaGame: React.FC = () => {
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
     const [scoreUpdated, setScoreUpdated] = useState<boolean>(false);
     const [answersOrder, setAnswersOrder] = useState<{ [key: number]: string[] }>({});
+    
+    // Mapa de idiomas para mostrar al usuario - ahora utilizando traducciones
+    const languageMap: Record<SupportedLanguage, string> = {
+        'sq': intl.formatMessage({ id: 'language.sq', defaultMessage: 'Albanés' }), 
+        'de': intl.formatMessage({ id: 'language.de', defaultMessage: 'Alemán' }), 
+        'ar': intl.formatMessage({ id: 'language.ar', defaultMessage: 'Árabe' }), 
+        'az': intl.formatMessage({ id: 'language.az', defaultMessage: 'Azerbaiyani' }), 
+        'eu': intl.formatMessage({ id: 'language.eu', defaultMessage: 'Vasco' }), 
+        'bn': intl.formatMessage({ id: 'language.bn', defaultMessage: 'Bengalí' }), 
+        'bg': intl.formatMessage({ id: 'language.bg', defaultMessage: 'Búlgaro' }), 
+        'cs': intl.formatMessage({ id: 'language.cs', defaultMessage: 'Checo' }), 
+        'zh': intl.formatMessage({ id: 'language.zh', defaultMessage: 'Chino' }), 
+        'zt': intl.formatMessage({ id: 'language.zt', defaultMessage: 'Chino (tradicional)' }), 
+        'ko': intl.formatMessage({ id: 'language.ko', defaultMessage: 'Coreano' }), 
+        'da': intl.formatMessage({ id: 'language.da', defaultMessage: 'Danés' }), 
+        'sk': intl.formatMessage({ id: 'language.sk', defaultMessage: 'Eslovaco' }), 
+        'sl': intl.formatMessage({ id: 'language.sl', defaultMessage: 'Esloveno' }), 
+        'es': intl.formatMessage({ id: 'language.es', defaultMessage: 'Español' }), 
+        'eo': intl.formatMessage({ id: 'language.eo', defaultMessage: 'Esperanto' }), 
+        'et': intl.formatMessage({ id: 'language.et', defaultMessage: 'Estonio' }), 
+        'fi': intl.formatMessage({ id: 'language.fi', defaultMessage: 'Finlandés' }), 
+        'fr': intl.formatMessage({ id: 'language.fr', defaultMessage: 'Francés' }), 
+        'gl': intl.formatMessage({ id: 'language.gl', defaultMessage: 'Gallego' }), 
+        'el': intl.formatMessage({ id: 'language.el', defaultMessage: 'Griego' }), 
+        'he': intl.formatMessage({ id: 'language.he', defaultMessage: 'Hebreo' }), 
+        'hi': intl.formatMessage({ id: 'language.hi', defaultMessage: 'Hindi' }), 
+        'nl': intl.formatMessage({ id: 'language.nl', defaultMessage: 'Holandés' }), 
+        'hu': intl.formatMessage({ id: 'language.hu', defaultMessage: 'Húngaro' }), 
+        'id': intl.formatMessage({ id: 'language.id', defaultMessage: 'Indonesio' }), 
+        'en': intl.formatMessage({ id: 'language.en', defaultMessage: 'Inglés' }), 
+        'ga': intl.formatMessage({ id: 'language.ga', defaultMessage: 'Irlandés' }), 
+        'it': intl.formatMessage({ id: 'language.it', defaultMessage: 'Italiano' }), 
+        'ja': intl.formatMessage({ id: 'language.ja', defaultMessage: 'Japonés' }), 
+        'lv': intl.formatMessage({ id: 'language.lv', defaultMessage: 'Letón' }), 
+        'lt': intl.formatMessage({ id: 'language.lt', defaultMessage: 'Lituano' }), 
+        'ms': intl.formatMessage({ id: 'language.ms', defaultMessage: 'Malayo' }), 
+        'nb': intl.formatMessage({ id: 'language.nb', defaultMessage: 'Noruego' }), 
+        'fa': intl.formatMessage({ id: 'language.fa', defaultMessage: 'Persa' }), 
+        'pl': intl.formatMessage({ id: 'language.pl', defaultMessage: 'Polaco' }), 
+        'pt': intl.formatMessage({ id: 'language.pt', defaultMessage: 'Portugués' }), 
+        'pt-BR': intl.formatMessage({ id: 'language.pt-BR', defaultMessage: 'Portugués (Brasil)' }), 
+        'ro': intl.formatMessage({ id: 'language.ro', defaultMessage: 'Rumano' }), 
+        'ru': intl.formatMessage({ id: 'language.ru', defaultMessage: 'Ruso' }), 
+        'sr': intl.formatMessage({ id: 'language.sr', defaultMessage: 'Serbio' }), 
+        'sv': intl.formatMessage({ id: 'language.sv', defaultMessage: 'Sueco' }), 
+        'tl': intl.formatMessage({ id: 'language.tl', defaultMessage: 'Tagalo' }), 
+        'th': intl.formatMessage({ id: 'language.th', defaultMessage: 'Tailandés' }), 
+        'tr': intl.formatMessage({ id: 'language.tr', defaultMessage: 'Turco' }), 
+        'uk': intl.formatMessage({ id: 'language.uk', defaultMessage: 'Ucraniano' }), 
+        'ur': intl.formatMessage({ id: 'language.ur', defaultMessage: 'Urdu' }), 
+        'vi': intl.formatMessage({ id: 'language.vi', defaultMessage: 'Vietnamita' })
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -151,10 +153,12 @@ const TriviaGame: React.FC = () => {
     if (loading) return (
         <LoadingScreen 
             isLoading={true} 
-            text="Preparando tus preguntas..." 
+            text={intl.formatMessage({ id: 'game.loading', defaultMessage: 'Preparando tus preguntas...' })} 
             backButton={
                 <Link to="/dashboard" className="back-button">
-                    <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                    <FontAwesomeIcon icon={faArrowLeft} /> <span>
+                        <FormattedMessage id="nav.back" defaultMessage="Volver" />
+                    </span>
                 </Link>
             }
         />
@@ -164,15 +168,19 @@ const TriviaGame: React.FC = () => {
         <>
             <div className="trivia-container">
                 <Link to="/dashboard" className="back-button">
-                    <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                    <FontAwesomeIcon icon={faArrowLeft} /> <span>
+                        <FormattedMessage id="nav.back" defaultMessage="Volver" />
+                    </span>
                 </Link>
                 <div className="trivia-card">
-                    <h2 className="trivia-title">Oops! Algo salió mal</h2>
+                    <h2 className="trivia-title">
+                        <FormattedMessage id="game.error" defaultMessage="Oops! Algo salió mal" />
+                    </h2>
                     <p className="error-text" style={{ textAlign: 'center', marginBottom: '2rem', color: '#555' }}>
                         {error}
                     </p>
                     <button className="retry-button" onClick={fetchQuestions}>
-                        Reintentar
+                        <FormattedMessage id="game.retry" defaultMessage="Reintentar" />
                     </button>
                 </div>
             </div>
@@ -187,47 +195,55 @@ const TriviaGame: React.FC = () => {
             <>
                 <div className="trivia-container">
                     <Link to="/dashboard" className="back-button">
-                        <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                        <FontAwesomeIcon icon={faArrowLeft} /> <span>
+                            <FormattedMessage id="nav.back" defaultMessage="Volver" />
+                        </span>
                     </Link>
                     <div className="trivia-card">
-                        <h2 className="trivia-title">¡Bienvenido a Triviality!</h2>
+                        <h2 className="trivia-title">
+                            <FormattedMessage id="app.title" defaultMessage="¡Bienvenido a Triviality!" />
+                        </h2>
                         <div className="difficulty-section">
                             <label className="difficulty-label">
-                                Selecciona la dificultad:
+                                <FormattedMessage id="game.selectDifficulty" defaultMessage="Selecciona la dificultad:" />
                             </label>
                             <div className="difficulty-buttons">
                                 {(['easy', 'medium', 'hard'] as Difficulty[]).map((difficulty) => (
                                     <button
                                         key={difficulty}
-                                        onClick={() => setSelectedDifficulty(difficulty)}
                                         className={`difficulty-button ${selectedDifficulty === difficulty ? 'selected' : ''}`}
+                                        onClick={() => setSelectedDifficulty(difficulty)}
                                     >
-                                        {difficulty.toUpperCase()}
+                                        <FormattedMessage 
+                                            id={`game.difficult.${difficulty}`} 
+                                            defaultMessage={difficulty === 'easy' ? 'Fácil' : difficulty === 'medium' ? 'Medio' : 'Difícil'} 
+                                        />
                                     </button>
                                 ))}
                             </div>
                         </div>
-                        
+
                         <div className="language-section">
                             <label className="language-label">
-                                <FontAwesomeIcon icon={faLanguage} /> Idioma de las preguntas:
+                                <FormattedMessage id="game.selectLanguage" defaultMessage="Selecciona el idioma:" />
                             </label>
-                            <select 
-                                className="language-select"
-                                value={selectedLanguage}
-                                onChange={(e) => setSelectedLanguage(e.target.value as SupportedLanguage)}
-                            >
-                                {Object.entries(languageMap).map(([code, name]) => (
-                                    <option key={code} value={code}>
-                                        {name}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="language-select-container">
+                                <FontAwesomeIcon icon={faLanguage} className="language-icon" />
+                                <select 
+                                    className="language-select"
+                                    value={selectedLanguage}
+                                    onChange={(e) => setSelectedLanguage(e.target.value as SupportedLanguage)}
+                                >
+                                    {Object.entries(languageMap).map(([code, name]) => (
+                                        <option key={code} value={code}>{name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                        
+
                         <div className="button-container">
-                            <button className="start-button" onClick={fetchQuestions}>
-                                Play
+                            <button className="start-game-button" onClick={fetchQuestions}>
+                                <FormattedMessage id="game.start" defaultMessage="Comenzar Juego" />
                             </button>
                         </div>
                     </div>
@@ -248,49 +264,54 @@ const TriviaGame: React.FC = () => {
         const percentage = Math.round((score / questions.length) * 100);
         
         // Determinar mensaje según el porcentaje
-        let message = '';
+        let messageId = '';
         if (percentage >= 90) {
-            message = '¡Excelente! Eres un maestro del trivia.';
+            messageId = 'game.feedback.excellent';
         } else if (percentage >= 70) {
-            message = '¡Muy bien! Tienes un gran conocimiento.';
+            messageId = 'game.feedback.veryGood';
         } else if (percentage >= 50) {
-            message = 'Buen trabajo. Tienes un conocimiento decente.';
+            messageId = 'game.feedback.good';
         } else if (percentage >= 30) {
-            message = 'No está mal, pero puedes mejorar.';
+            messageId = 'game.feedback.fair';
         } else {
-            message = 'Sigue practicando para mejorar tu puntuación.';
+            messageId = 'game.feedback.needsPractice';
         }
         
         return (
             <>
-                <div className="trivia-container">
-                    <Link to="/dashboard" className="back-button">
-                        <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
-                    </Link>
+                <div className="trivia-container score-container">
                     <div className="trivia-card">
-                        <div className="results-container">
-                            <h2 className="results-heading">¡Juego terminado!</h2>
-                            <div className="results-score">{percentage}%</div>
-                            <p className="results-message">{message}</p>
-                            
-                            <div className="score-details">
-                                <div className="score-detail">
-                                    <div className="score-detail-label">Total</div>
-                                    <div className="score-detail-value">{questions.length}</div>
-                                </div>
-                                <div className="score-detail">
-                                    <div className="score-detail-label">Correctas</div>
-                                    <div className="score-detail-value correct">{correctAnswers}</div>
-                                </div>
-                                <div className="score-detail">
-                                    <div className="score-detail-label">Incorrectas</div>
-                                    <div className="score-detail-value incorrect">{incorrectAnswers}</div>
-                                </div>
-                            </div>
-                            
-                            <button className="play-again-button" onClick={restartGame}>
-                                Jugar de nuevo
+                        <h2 className="trivia-title">
+                            <FormattedMessage id="game.finish" defaultMessage="¡Juego terminado!" />
+                        </h2>
+                        <p className="final-score">
+                            <FormattedMessage 
+                                id="game.score" 
+                                defaultMessage="Tu puntuación: {score}" 
+                                values={{ score: `${score}/${questions.length}` }}
+                            />
+                        </p>
+                        <p className="feedback-message">
+                            <FormattedMessage 
+                                id={messageId} 
+                                defaultMessage={
+                                    percentage >= 90 ? '¡Excelente! Eres un maestro del trivia.' :
+                                    percentage >= 70 ? '¡Muy bien! Tienes un gran conocimiento.' :
+                                    percentage >= 50 ? 'Buen trabajo. Tienes un conocimiento decente.' :
+                                    percentage >= 30 ? 'No está mal, pero puedes mejorar.' :
+                                    'Sigue practicando para mejorar tu puntuación.'
+                                }
+                            />
+                        </p>
+
+                        <div className="score-buttons">
+                            <button className="restart-button" onClick={restartGame}>
+                                <FormattedMessage id="game.restart" defaultMessage="Jugar de nuevo" />
                             </button>
+                            <Link to="/dashboard" className="home-button">
+                                <FontAwesomeIcon icon={faHome} />
+                                <FormattedMessage id="nav.home" defaultMessage="Inicio" />
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -309,15 +330,25 @@ const TriviaGame: React.FC = () => {
         <>
             <div className="trivia-container">
                 <Link to="/dashboard" className="back-button">
-                    <FontAwesomeIcon icon={faArrowLeft} /> <span>Volver</span>
+                    <FontAwesomeIcon icon={faArrowLeft} /> <span>
+                        <FormattedMessage id="nav.back" defaultMessage="Volver" />
+                    </span>
                 </Link>
                 <div className="trivia-card">
                     <div className="game-header">
                         <span className="question-counter">
-                            Pregunta {currentQuestion + 1} de {questions.length}
+                            <FormattedMessage 
+                                id="game.question" 
+                                defaultMessage="Pregunta {current} de {total}" 
+                                values={{ current: currentQuestion + 1, total: questions.length }}
+                            />
                         </span>
                         <span className={`score-counter ${scoreUpdated ? 'score-updated' : ''}`}>
-                            Puntuación: {score}
+                            <FormattedMessage 
+                                id="game.score.counter" 
+                                defaultMessage="Puntuación: {score}" 
+                                values={{ score }}
+                            />
                         </span>
                     </div>
                     <div className="tags-container">
@@ -325,7 +356,13 @@ const TriviaGame: React.FC = () => {
                             {currentQ.category}
                         </span>
                         <span className="difficulty-tag">
-                            {currentQ.difficulty.toUpperCase()}
+                            <FormattedMessage 
+                                id={`game.difficult.${currentQ.difficulty}`} 
+                                defaultMessage={
+                                    currentQ.difficulty === 'easy' ? 'Fácil' : 
+                                    currentQ.difficulty === 'medium' ? 'Medio' : 'Difícil'
+                                } 
+                            />
                         </span>
                         <span className="language-tag">
                             <FontAwesomeIcon icon={faLanguage} /> {languageMap[selectedLanguage]}

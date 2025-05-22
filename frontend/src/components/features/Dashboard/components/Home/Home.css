@@ -10,18 +10,20 @@
     margin-bottom: 0;
     box-sizing: border-box;
     justify-content: center;
+
+    .home-content {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        gap: 3rem;
+        align-items: flex-start;
+        justify-content: center;
+        box-sizing: border-box;
+    }
 }
 
-.home-content {
-    display: flex;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    gap: 3rem;
-    align-items: flex-start;
-    justify-content: center;
-    box-sizing: border-box;
-}
+
 
 .welcome-area {
     display: flex;

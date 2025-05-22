@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import axios from '../../../config/axios';
 import '../../../styles/components/Auth.css';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
+    const intl = useIntl();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -25,42 +27,62 @@ const Login: React.FC = () => {
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         } catch (err) {
-            setError('Credenciales inválidas');
+            setError(intl.formatMessage({ id: 'auth.invalidCredentials', defaultMessage: 'Credenciales inválidas' }));
         }
     };
 
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2>Iniciar Sesión</h2>
+                <h2>
+                    <FormattedMessage id="auth.login" defaultMessage="Iniciar Sesión" />
+                </h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">
+                            <FormattedMessage id="auth.email" defaultMessage="Email" />
+                        </label>
                         <input
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
+                            placeholder={intl.formatMessage({ id: 'auth.email', defaultMessage: 'Email' })}
                             required
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Contraseña</label>
+                        <label htmlFor="password">
+                            <FormattedMessage id="auth.password" defaultMessage="Contraseña" />
+                        </label>
                         <input
                             type="password"
                             id="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
+                            placeholder={intl.formatMessage({ id: 'auth.password', defaultMessage: 'Contraseña' })}
                             required
                         />
                     </div>
-                    <button type="submit" className="auth-button">Iniciar Sesión</button>
+                    <button type="submit" className="auth-button">
+                        <FormattedMessage id="auth.login" defaultMessage="Iniciar Sesión" />
+                    </button>
                 </form>
                 <p className="auth-link">
-                    ¿No tienes cuenta? <span onClick={() => navigate('/signup')}>Regístrate</span>
+                    <FormattedMessage
+                        id="auth.noAccount"
+                        defaultMessage="¿No tienes cuenta? {signupLink}"
+                        values={{
+                            signupLink: (
+                                <span onClick={() => navigate('/signup')}>
+                                    <FormattedMessage id="auth.signup" defaultMessage="Regístrate" />
+                                </span>
+                            )
+                        }}
+                    />
                 </p>
             </div>
         </div>
