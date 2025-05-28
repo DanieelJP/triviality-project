@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -71,5 +72,40 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Sesión cerrada exitosamente'
         ]);
+    }
+
+    public function refreshToken(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            
+            if (!$user) {
+                // Si hay un token antiguo, intentamos obtenerlo y validarlo
+                $oldToken = $request->bearerToken();
+                if ($oldToken) {
+                    $tokenModel = PersonalAccessToken::findToken($oldToken);
+                    if ($tokenModel) {
+                        $user = $tokenModel->tokenable;
+                    }
+                }
+            }
+
+            if (!$user) {
+                return response()->json(['error' => 'No se pudo refrescar el token'], 401);
+            }
+
+            // Revocar todos los tokens antiguos
+            $user->tokens()->delete();
+
+            // Crear un nuevo token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al refrescar el token'], 500);
+        }
     }
 } 

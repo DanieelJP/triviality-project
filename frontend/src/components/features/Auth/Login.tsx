@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
-import axios from '../../../config/axios';
+import axios, { setAuthToken } from '../../../config/axios';
 import '../../../styles/components/Auth.css';
 
 const Login: React.FC = () => {
@@ -24,7 +24,9 @@ const Login: React.FC = () => {
         e.preventDefault();
         try {
             const response = await axios.post('/api/login', formData);
-            localStorage.setItem('token', response.data.token);
+            const token = response.data.access_token;
+            setAuthToken(token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
             navigate('/dashboard');
         } catch (err) {
             setError(intl.formatMessage({ id: 'auth.invalidCredentials', defaultMessage: 'Credenciales inválidas' }));

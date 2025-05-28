@@ -1,20 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import './Home.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faGamepad,
+    faStar,
     faBullseye,
-    faMedal,
-    faChartBar 
+    faClock,
+    faPlay 
 } from '@fortawesome/free-solid-svg-icons';
+import axios from '../../../../../config/axios';
 
 interface HomeProps {
     userName: string;
     startGame: () => void;
 }
 
+interface UserStats {
+    total_games: number;
+    total_points: number;
+    accuracy: number;
+    avg_response_time: number;
+}
+
 const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
+    const [stats, setStats] = useState<UserStats | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await axios.get('/api/profile');
+                setStats(response.data.stats);
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
     return (
         <div className="home-container">
             
@@ -24,8 +51,8 @@ const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
                             <h1>
                                 <FormattedMessage 
                                     id="dashboard.welcome" 
-                                    defaultMessage="¡Bienvenido a Triviality, {userName}!"
-                                    values={{ userName }}
+                                    defaultMessage="¡Bienvenido, {name}!"
+                                    values={{ name: userName }}
                                 />
                             </h1>
                             <p className="hero-text">
@@ -35,10 +62,10 @@ const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
                                 />
                             </p>
                             <button className="play-button" onClick={startGame}>
-                                <FontAwesomeIcon icon={faGamepad} className="button-icon" />
+                                <FontAwesomeIcon icon={faPlay} />
                                 <FormattedMessage 
-                                    id="game.playNow" 
-                                    defaultMessage="¡Jugar Ahora!"
+                                    id="dashboard.playNow" 
+                                    defaultMessage="Jugar Ahora"
                                 />
                             </button>
                         </div>
@@ -55,14 +82,14 @@ const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
                             <div className="stats-divider"></div>
                             
                             <div className="stat-item">
-                                <div className="stat-icon-wrapper">
-                                    <FontAwesomeIcon icon={faBullseye} className="stat-icon-custom" />
-                                </div>
-                                <div className="stat-value-large">0</div>
-                                <div className="stat-label-custom">
+                                <FontAwesomeIcon icon={faGamepad} className="stat-icon" />
+                                <div className="stat-info">
+                                    <span className="stat-value">
+                                        {loading ? '...' : stats?.total_games || 0}
+                                    </span>
                                     <FormattedMessage 
                                         id="dashboard.games" 
-                                        defaultMessage="PARTIDAS JUGADAS"
+                                        defaultMessage="Partidas Jugadas"
                                     />
                                 </div>
                             </div>
@@ -70,14 +97,14 @@ const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
                             <div className="stats-divider"></div>
                             
                             <div className="stat-item">
-                                <div className="stat-icon-wrapper">
-                                    <FontAwesomeIcon icon={faMedal} className="stat-icon-custom" />
-                                </div>
-                                <div className="stat-value-large">0</div>
-                                <div className="stat-label-custom">
+                                <FontAwesomeIcon icon={faStar} className="stat-icon" />
+                                <div className="stat-info">
+                                    <span className="stat-value">
+                                        {loading ? '...' : stats?.total_points || 0}
+                                    </span>
                                     <FormattedMessage 
                                         id="dashboard.bestScore" 
-                                        defaultMessage="MEJOR PUNTUACIÓN"
+                                        defaultMessage="Puntos Totales"
                                     />
                                 </div>
                             </div>
@@ -85,14 +112,29 @@ const Home: React.FC<HomeProps> = ({ userName, startGame }) => {
                             <div className="stats-divider"></div>
                             
                             <div className="stat-item">
-                                <div className="stat-icon-wrapper">
-                                    <FontAwesomeIcon icon={faChartBar} className="stat-icon-custom" />
-                                </div>
-                                <div className="stat-value-large">0%</div>
-                                <div className="stat-label-custom">
+                                <FontAwesomeIcon icon={faBullseye} className="stat-icon" />
+                                <div className="stat-info">
+                                    <span className="stat-value">
+                                        {loading ? '...' : `${stats?.accuracy || 0}%`}
+                                    </span>
                                     <FormattedMessage 
                                         id="dashboard.accuracy" 
-                                        defaultMessage="ACIERTOS"
+                                        defaultMessage="Precisión"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="stats-divider"></div>
+                            
+                            <div className="stat-item">
+                                <FontAwesomeIcon icon={faClock} className="stat-icon" />
+                                <div className="stat-info">
+                                    <span className="stat-value">
+                                        {loading ? '...' : `${stats?.avg_response_time.toFixed(1)}s` || '0s'}
+                                    </span>
+                                    <FormattedMessage 
+                                        id="dashboard.avgTime" 
+                                        defaultMessage="Tiempo Promedio"
                                     />
                                 </div>
                             </div>
