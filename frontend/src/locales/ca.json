@@ -29,6 +29,7 @@
   "profile.error.loading": "Error en carregar el perfil",
   "profile.error.generic": "S'ha produït un error",
   "profile.level": "Nivell {level}",
+  "profile.xpProgress": "{current} / {total} XP",
   "profile.nav.stats": "Estadístiques",
   "profile.nav.achievements": "Assoliments",
   "profile.nav.rankings": "Classificacions",
@@ -41,6 +42,13 @@
   "profile.stats.categoryTitle": "Rendiment per Categoria",
   "profile.stats.difficultyTitle": "Rendiment per Dificultat",
   "profile.stats.correctOf": "{correct} de {total} correctes",
+  "profile.stats.performance": "Rendiment",
+  "profile.stats.pointsPerGame": "Punts per Partida",
+  "profile.stats.pointsEarned": "Punts Guanyats",
+  "profile.stats.remainingPoints": "Punts Restants",
+  "profile.stats.generalMetrics": "Mètriques Generals",
+  "profile.stats.pointsDistribution": "Distribució de Punts",
+  "profile.stats.values": "Valors",
   "profile.achievements.title": "Assoliments Desbloquejats",
   "profile.achievements.unlockedOn": "Desbloquejat el {date}",
   "profile.ranking.daily": "Diari",
@@ -136,12 +144,14 @@
   "game.feedback.fair": "No està malament, però pots millorar.",
   "game.feedback.needsPractice": "Segueix practicant per millorar la teva puntuació.",
   
-  "dashboard.welcome": "Benvingut a Triviality, {userName}!",
+  "dashboard.welcome": "Benvingut, {name}!",
   "dashboard.selectTab": "Selecciona una pestanya",
   "dashboard.stats": "Les teves estadístiques",
   "dashboard.games": "PARTIDES JUGADES",
   "dashboard.bestScore": "MILLOR PUNTUACIÓ",
-  "dashboard.accuracy": "ENCERTS",
+  "dashboard.accuracy": "PRECISIÓ",
+  "dashboard.avgTime": "TEMPS MITJÀ",
+  "dashboard.playNow": "Jugar Ara!",
   
   "play.title": "Tria el teu Mode de Joc",
   "play.description": "Diferents modes per desafiar els teus coneixements i habilitats",
@@ -198,12 +208,14 @@
   "game.feedback.fair": "No està malament, però pots millorar.",
   "game.feedback.needsPractice": "Segueix practicant per millorar la teva puntuació.",
   
-  "dashboard.welcome": "Benvingut a Triviality, {userName}!",
+  "dashboard.welcome": "Benvingut, {name}!",
   "dashboard.selectTab": "Selecciona una pestanya",
   "dashboard.stats": "Les teves estadístiques",
   "dashboard.games": "PARTIDES JUGADES",
   "dashboard.bestScore": "MILLOR PUNTUACIÓ",
-  "dashboard.accuracy": "ENCERTS",
+  "dashboard.accuracy": "PRECISIÓ",
+  "dashboard.avgTime": "TEMPS MITJÀ",
+  "dashboard.playNow": "Jugar Ara!",
   
   "play.title": "Tria el teu Mode de Joc",
   "play.description": "Diferents modes per desafiar els teus coneixements i habilitats",
@@ -316,10 +328,11 @@
       "generic": "S'ha produït un error"
     },
     "level": "Nivell {level}",
+    "xpProgress": "{current} / {total} XP",
     "nav": {
       "stats": "Estadístiques",
       "achievements": "Assoliments",
-      "rankings": "Classificacions"
+      "rankings": "Rànquings"
     },
     "stats": {
       "title": "Estadístiques Generals",
@@ -330,7 +343,15 @@
       "totalPoints": "Punts Totals",
       "categoryTitle": "Rendiment per Categoria",
       "difficultyTitle": "Rendiment per Dificultat",
-      "correctOf": "{correct} de {total} correctes"
+      "correctOf": "{correct} de {total} correctes",
+      "performance": "Rendiment",
+      "pointsPerGame": "Punts per Partida",
+      "pointsEarned": "Punts Guanyats",
+      "remainingPoints": "Punts Restants",
+      "generalMetrics": "Mètriques Generals",
+      "pointsDistribution": "Distribució de Punts",
+      "values": "Valors",
+      "points": "punts"
     },
     "achievements": {
       "title": "Assoliments Desbloquejats",

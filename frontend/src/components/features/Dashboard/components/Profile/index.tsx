@@ -60,7 +60,7 @@ const Profile: React.FC = () => {
             } catch (err) {
                 setError(intl.formatMessage({ 
                     id: 'profile.error.loading', 
-                    defaultMessage: 'Error al cargar el perfil' 
+                    defaultMessage: 'Error loading profile' 
                 }));
             } finally {
                 setLoading(false);
@@ -84,7 +84,7 @@ const Profile: React.FC = () => {
                 <div className="error-message">
                     {error || intl.formatMessage({ 
                         id: 'profile.error.generic', 
-                        defaultMessage: 'Ha ocurrido un error' 
+                        defaultMessage: 'An error has occurred' 
                     })}
                 </div>
             </div>
@@ -97,7 +97,7 @@ const Profile: React.FC = () => {
             <div className="profile-header">
                 <div className="profile-avatar">
                     {profileData.user.avatar ? (
-                        <img src={profileData.user.avatar} alt="Avatar" />
+                        <img src={profileData.user.avatar} alt={intl.formatMessage({ id: 'profile.avatar', defaultMessage: 'User avatar' })} />
                     ) : (
                         <FontAwesomeIcon icon={faUser} className="default-avatar" />
                     )}
@@ -115,14 +115,14 @@ const Profile: React.FC = () => {
                     onClick={() => setActiveTab('stats')}
                 >
                     <FontAwesomeIcon icon={faChartLine} />
-                    <span>{intl.formatMessage({ id: 'profile.nav.stats', defaultMessage: 'Estadísticas' })}</span>
+                    <span>{intl.formatMessage({ id: 'profile.nav.stats', defaultMessage: 'Statistics' })}</span>
                 </button>
                 <button 
                     className={`nav-button ${activeTab === 'achievements' ? 'active' : ''}`}
                     onClick={() => setActiveTab('achievements')}
                 >
                     <FontAwesomeIcon icon={faTrophy} />
-                    <span>{intl.formatMessage({ id: 'profile.nav.achievements', defaultMessage: 'Logros' })}</span>
+                    <span>{intl.formatMessage({ id: 'profile.nav.achievements', defaultMessage: 'Achievements' })}</span>
                 </button>
                 <button 
                     className={`nav-button ${activeTab === 'rankings' ? 'active' : ''}`}
@@ -155,7 +155,7 @@ const Profile: React.FC = () => {
                                 })}</h3>
                                 <div className="ranking-info">
                                     <span className="rank">#{ranking.rank}</span>
-                                    <span className="score">{ranking.score} pts</span>
+                                    <span className="score">{ranking.score} {intl.formatMessage({ id: 'profile.stats.points', defaultMessage: 'points' })}</span>
                                 </div>
                             </div>
                         ))}

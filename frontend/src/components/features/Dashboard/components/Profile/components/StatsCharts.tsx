@@ -47,20 +47,49 @@ const StatsCharts: React.FC<StatsChartsProps> = ({ stats }) => {
         plugins: {
             legend: {
                 position: 'bottom' as const,
+                labels: {
+                    font: {
+                        size: 12
+                    },
+                    color: '#333'
+                }
             },
+            tooltip: {
+                titleFont: {
+                    size: 14
+                },
+                bodyFont: {
+                    size: 12
+                },
+                callbacks: {
+                    label: function(context: any) {
+                        const value = context.raw;
+                        if (context.datasetIndex === 0) {
+                            if (context.dataIndex === 0) {
+                                return `${value.toFixed(2)}%`;
+                            } else if (context.dataIndex === 1) {
+                                return `${value.toFixed(2)}s`;
+                            } else {
+                                return `${value.toFixed(2)} ${intl.formatMessage({ id: 'profile.stats.points', defaultMessage: 'points' })}`;
+                            }
+                        }
+                        return `${value} ${intl.formatMessage({ id: 'profile.stats.points', defaultMessage: 'points' })}`;
+                    }
+                }
+            }
         },
     };
 
     // Datos para el gráfico de métricas generales
     const metricsChartData = {
         labels: [
-            intl.formatMessage({ id: 'stats.accuracy', defaultMessage: 'Precisión' }),
-            intl.formatMessage({ id: 'stats.avgTime', defaultMessage: 'Tiempo Promedio (s)' }),
-            intl.formatMessage({ id: 'stats.pointsPerGame', defaultMessage: 'Puntos por Partida' }),
+            intl.formatMessage({ id: 'profile.stats.accuracy', defaultMessage: 'Accuracy' }),
+            intl.formatMessage({ id: 'profile.stats.avgTime', defaultMessage: 'Average Time' }),
+            intl.formatMessage({ id: 'profile.stats.pointsPerGame', defaultMessage: 'Points per Game' }),
         ],
         datasets: [
             {
-                label: intl.formatMessage({ id: 'stats.performance', defaultMessage: 'Rendimiento' }),
+                label: intl.formatMessage({ id: 'profile.stats.performance', defaultMessage: 'Performance' }),
                 data: [
                     stats.accuracy,
                     stats.avg_response_time,
@@ -84,8 +113,8 @@ const StatsCharts: React.FC<StatsChartsProps> = ({ stats }) => {
     // Datos para el gráfico de distribución de puntos
     const pointsDistributionData = {
         labels: [
-            intl.formatMessage({ id: 'stats.pointsEarned', defaultMessage: 'Puntos Ganados' }),
-            intl.formatMessage({ id: 'stats.remainingPoints', defaultMessage: 'Puntos Restantes' }),
+            intl.formatMessage({ id: 'profile.stats.pointsEarned', defaultMessage: 'Points Earned' }),
+            intl.formatMessage({ id: 'profile.stats.remainingPoints', defaultMessage: 'Remaining Points' }),
         ],
         datasets: [{
             data: [
@@ -110,8 +139,8 @@ const StatsCharts: React.FC<StatsChartsProps> = ({ stats }) => {
                 <div className="chart-container">
                     <h3>
                         {intl.formatMessage({ 
-                            id: 'stats.generalMetrics', 
-                            defaultMessage: 'Métricas Generales' 
+                            id: 'profile.stats.generalMetrics', 
+                            defaultMessage: 'General Metrics' 
                         })}
                     </h3>
                     <div className="chart-wrapper">
@@ -122,6 +151,25 @@ const StatsCharts: React.FC<StatsChartsProps> = ({ stats }) => {
                                 scales: {
                                     y: {
                                         beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: intl.formatMessage({ 
+                                                id: 'profile.stats.values', 
+                                                defaultMessage: 'Values' 
+                                            }),
+                                            color: '#333'
+                                        },
+                                        ticks: {
+                                            color: '#333',
+                                            callback: function(value: any) {
+                                                return value + (value === 100 ? '%' : '');
+                                            }
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            color: '#333'
+                                        }
                                     }
                                 }
                             }} 
@@ -131,8 +179,8 @@ const StatsCharts: React.FC<StatsChartsProps> = ({ stats }) => {
                 <div className="chart-container">
                     <h3>
                         {intl.formatMessage({ 
-                            id: 'stats.pointsDistribution', 
-                            defaultMessage: 'Distribución de Puntos' 
+                            id: 'profile.stats.pointsDistribution', 
+                            defaultMessage: 'Points Distribution' 
                         })}
                     </h3>
                     <div className="chart-wrapper">
