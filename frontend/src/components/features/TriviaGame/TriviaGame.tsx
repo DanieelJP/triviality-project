@@ -4,10 +4,33 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Question, Difficulty, SupportedLanguage } from '../../../types/trivia';
 import { triviaService } from '../../../services/triviaService';
 import logo from '../../../assets/logo.png';
-import '../../../styles/components/TriviaGame.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faHome, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from './LoadingScreen';
+import './TriviaGame.css';
+
+interface GameAnswer {
+    question: string;
+    given_answer: string;
+    correct_answer: string;
+    is_correct: boolean;
+    response_time: number;
+    points_earned: number;
+}
+
+interface GameResult {
+    answers: GameAnswer[];
+    bonuses?: {
+        streak: number;
+        quick: number;
+        difficulty: number;
+    };
+    experience_gained?: number;
+    new_level?: number;
+    experience_points?: number;
+    next_level_xp?: number;
+    progress?: number;
+}
 
 const TriviaGame: React.FC = () => {
     const navigate = useNavigate();
@@ -25,6 +48,8 @@ const TriviaGame: React.FC = () => {
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
     const [scoreUpdated, setScoreUpdated] = useState<boolean>(false);
     const [answersOrder, setAnswersOrder] = useState<{ [key: number]: string[] }>({});
+    const [gameResult, setGameResult] = useState<GameResult>({ answers: [] });
+    const [startTime, setStartTime] = useState<number>(0);
     
     // Mapa de idiomas para mostrar al usuario - ahora utilizando traducciones
     const languageMap: Record<SupportedLanguage, string> = {
@@ -109,6 +134,7 @@ const TriviaGame: React.FC = () => {
             
             setAnswersOrder(orderMap);
             setQuestions(results);
+            setStartTime(Date.now());
             setError('');
             setGameStarted(true);
         } catch (err) {
@@ -119,8 +145,33 @@ const TriviaGame: React.FC = () => {
     };
 
     const handleAnswer = async (answer: string) => {
-        setSelectedAnswer(answer);
+        const endTime = Date.now();
+        const responseTime = (endTime - startTime) / 1000; // tiempo en segundos
         const isCorrect = answer === questions[currentQuestion].correct_answer;
+        
+        // Calcular puntos basados en tiempo de respuesta y dificultad
+        let points = isCorrect ? 10 : 0;
+        if (isCorrect) {
+            if (selectedDifficulty === 'hard') points = 30;
+            else if (selectedDifficulty === 'medium') points = 20;
+            
+            // Bonus por respuesta rápida (menos de 5 segundos)
+            if (responseTime < 5) points += 5;
+        }
+
+        // Guardar la respuesta
+        const newAnswers = [...gameResult.answers, {
+            question: questions[currentQuestion].question,
+            given_answer: answer,
+            correct_answer: questions[currentQuestion].correct_answer,
+            is_correct: isCorrect,
+            response_time: responseTime,
+            points_earned: points
+        }];
+
+        setGameResult(prev => ({ ...prev, answers: newAnswers }));
+
+        setSelectedAnswer(answer);
         setIsAnswerCorrect(isCorrect);
 
         if (isCorrect) {
@@ -137,8 +188,35 @@ const TriviaGame: React.FC = () => {
         const nextQuestion = currentQuestion + 1;
         if (nextQuestion < questions.length) {
             setCurrentQuestion(nextQuestion);
+            setStartTime(Date.now());
         } else {
             setShowScore(true);
+            // Guardar resultados del juego
+            try {
+                const results = await triviaService.saveGameResults({
+                    difficulty: selectedDifficulty,
+                    category: questions[0].category,
+                    answers: gameResult.answers
+                });
+                
+                setGameResult(prev => ({
+                    ...prev,
+                    bonuses: results.bonuses,
+                    experience_gained: results.experience_gained,
+                    new_level: results.new_level,
+                    experience_points: results.experience_points,
+                    next_level_xp: results.next_level_xp,
+                    progress: results.progress
+                }));
+                
+                // Si la llamada fue exitosa, actualizar el nivel en localStorage
+                if (results.new_level > parseInt(localStorage.getItem('userLevel') || '1')) {
+                    localStorage.setItem('userLevel', results.new_level.toString());
+                    localStorage.setItem('userXP', results.experience_points.toString());
+                }
+            } catch (error) {
+                console.error('Error al guardar resultados:', error);
+            }
         }
     };
 
@@ -148,6 +226,7 @@ const TriviaGame: React.FC = () => {
         setShowScore(false);
         setGameStarted(false);
         setQuestions([]);
+        setGameResult({ answers: [] });
     };
 
     if (loading) return (
@@ -278,47 +357,125 @@ const TriviaGame: React.FC = () => {
         }
         
         return (
-            <>
-                <div className="trivia-container score-container">
-                    <div className="trivia-card">
-                        <h2 className="trivia-title">
-                            <FormattedMessage id="game.finish" defaultMessage="¡Juego terminado!" />
+            <div className="score-container">
+                <h2>
+                    <FormattedMessage id={messageId} />
                         </h2>
-                        <p className="final-score">
-                            <FormattedMessage 
-                                id="game.score" 
-                                defaultMessage="Tu puntuación: {score}" 
-                                values={{ score: `${score}/${questions.length}` }}
-                            />
-                        </p>
-                        <p className="feedback-message">
-                            <FormattedMessage 
-                                id={messageId} 
-                                defaultMessage={
-                                    percentage >= 90 ? '¡Excelente! Eres un maestro del trivia.' :
-                                    percentage >= 70 ? '¡Muy bien! Tienes un gran conocimiento.' :
-                                    percentage >= 50 ? 'Buen trabajo. Tienes un conocimiento decente.' :
-                                    percentage >= 30 ? 'No está mal, pero puedes mejorar.' :
-                                    'Sigue practicando para mejorar tu puntuación.'
-                                }
-                            />
-                        </p>
-
-                        <div className="score-buttons">
-                            <button className="restart-button" onClick={restartGame}>
-                                <FormattedMessage id="game.restart" defaultMessage="Jugar de nuevo" />
-                            </button>
-                            <Link to="/dashboard" className="home-button">
-                                <FontAwesomeIcon icon={faHome} />
-                                <FormattedMessage id="nav.home" defaultMessage="Inicio" />
-                            </Link>
-                        </div>
+                
+                <div className="score-summary">
+                    <div className="score-item">
+                        <span className="score-label">
+                            <FormattedMessage id="game.score.total" defaultMessage="Puntuación Total" />
+                        </span>
+                        <span className="score-value">{score}</span>
+                    </div>
+                    <div className="score-item">
+                        <span className="score-label">
+                            <FormattedMessage id="game.score.correct" defaultMessage="Respuestas Correctas" />
+                        </span>
+                        <span className="score-value">{correctAnswers}</span>
+                    </div>
+                    <div className="score-item">
+                        <span className="score-label">
+                            <FormattedMessage id="game.score.incorrect" defaultMessage="Respuestas Incorrectas" />
+                        </span>
+                        <span className="score-value">{incorrectAnswers}</span>
+                    </div>
+                    <div className="score-item">
+                        <span className="score-label">
+                            <FormattedMessage id="game.score.accuracy" defaultMessage="Precisión" />
+                        </span>
+                        <span className="score-value">{percentage}%</span>
                     </div>
                 </div>
-                <div className="logo-center">
-                    <img src={logo} alt="Triviality Logo" className="triviality-logo" />
+
+                {/* Mostrar experiencia ganada y bonificaciones */}
+                <div className="experience-summary">
+                    <h3>
+                        <FormattedMessage id="game.experience.title" defaultMessage="Experiencia Ganada" />
+                    </h3>
+                    <div className="experience-details">
+                        <div className="experience-item">
+                            <span className="experience-label">
+                                <FormattedMessage id="game.experience.base" defaultMessage="Base" />
+                            </span>
+                            <span className="experience-value">+{score} XP</span>
+                        </div>
+                        {gameResult.bonuses && gameResult.bonuses.streak > 0 && (
+                            <div className="experience-item bonus">
+                                <span className="experience-label">
+                                    <FormattedMessage 
+                                        id="game.experience.streakBonus" 
+                                        defaultMessage="Bonus por Racha" 
+                                    />
+                                </span>
+                                <span className="experience-value">+{gameResult.bonuses.streak} XP</span>
+                            </div>
+                        )}
+                        {gameResult.bonuses && gameResult.bonuses.quick > 0 && (
+                            <div className="experience-item bonus">
+                                <span className="experience-label">
+                            <FormattedMessage 
+                                        id="game.experience.quickBonus" 
+                                        defaultMessage="Bonus por Rapidez" 
+                                    />
+                                </span>
+                                <span className="experience-value">+{gameResult.bonuses.quick} XP</span>
+                            </div>
+                        )}
+                        {gameResult.bonuses && gameResult.bonuses.difficulty > 0 && (
+                            <div className="experience-item bonus">
+                                <span className="experience-label">
+                            <FormattedMessage 
+                                        id="game.experience.difficultyBonus" 
+                                        defaultMessage="Bonus por Dificultad" 
+                                    />
+                                </span>
+                                <span className="experience-value">+{gameResult.bonuses.difficulty} XP</span>
+                            </div>
+                        )}
+                        <div className="experience-item total">
+                            <span className="experience-label">
+                                <FormattedMessage id="game.experience.total" defaultMessage="Total" />
+                            </span>
+                            <span className="experience-value">+{gameResult.experience_gained || 0} XP</span>
+                        </div>
+                    </div>
+
+                    {/* Mostrar progreso de nivel si subió */}
+                    {gameResult.new_level && gameResult.new_level > parseInt(localStorage.getItem('userLevel') || '1') && (
+                        <div className="level-up-notification">
+                            <h3>
+                                <FormattedMessage 
+                                    id="game.levelUp" 
+                                    defaultMessage="¡Has subido al nivel {level}!" 
+                                    values={{ level: gameResult.new_level }}
+                                />
+                            </h3>
+                            <div className="level-progress">
+                                <div className="progress-bar">
+                                    <div 
+                                        className="progress-fill" 
+                                        style={{ width: `${gameResult.progress || 0}%` }}
+                                    />
+                                </div>
+                                <div className="progress-text">
+                                    {gameResult.experience_points || 0} / {gameResult.next_level_xp || 0} XP
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            </>
+
+                <div className="score-actions">
+                    <button onClick={restartGame} className="button primary">
+                        <FormattedMessage id="game.playAgain" defaultMessage="Jugar de Nuevo" />
+                    </button>
+                    <Link to="/dashboard" className="button secondary">
+                        <FormattedMessage id="game.backToDashboard" defaultMessage="Volver al Dashboard" />
+                    </Link>
+                </div>
+            </div>
         );
     }
 

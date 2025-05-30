@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Layout } from '../../layout';
 import '../../../styles/components/DashboardBase.css';
@@ -13,9 +13,22 @@ import AboutUs from './components/AboutUs';
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const intl = useIntl();
-    const [activeTab, setActiveTab] = useState<string>('home');
     const [userName, setUserName] = useState<string>('Usuario');
+
+    // Determinar la pestaña activa basada en la ruta
+    const getActiveTab = () => {
+        const path = location.pathname.split('/').pop() || 'home';
+        return path === 'dashboard' ? 'home' : path;
+    };
+
+    const [activeTab, setActiveTab] = useState<string>(getActiveTab());
+
+    // Actualizar la pestaña activa cuando cambia la ruta
+    useEffect(() => {
+        setActiveTab(getActiveTab());
+    }, [location]);
 
     // Verificar si el usuario está autenticado
     useEffect(() => {
@@ -25,13 +38,17 @@ const Dashboard: React.FC = () => {
         }
         
         // Aquí normalmente obtendrías los datos del usuario desde una API
-        // Por ahora solo usamos un nombre de usuario ficticio
-        setUserName('Jugador');
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            const user = JSON.parse(userData);
+            setUserName(user.name || 'Jugador');
+        }
     }, [navigate]);
 
     // Función para manejar el logout
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         navigate('/login');
     };
 
@@ -43,31 +60,7 @@ const Dashboard: React.FC = () => {
     // Función para cambiar la pestaña activa
     const handleTabChange = (tabId: string) => {
         setActiveTab(tabId);
-    };
-
-    // Renderizar el contenido basado en la pestaña activa
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'home':
-                return <Home userName={userName} startGame={startGame} />;
-            case 'play':
-                return <Play startGame={startGame} />;
-            case 'leaderboard':
-                return <Leaderboard />;
-            case 'profile':
-                return <Profile />;
-            case 'about':
-                return <AboutUs />;
-            default:
-                return (
-                    <div>
-                        <FormattedMessage 
-                            id="dashboard.selectTab" 
-                            defaultMessage="Selecciona una pestaña" 
-                        />
-                    </div>
-                );
-        }
+        navigate(tabId === 'home' ? '/dashboard' : `/dashboard/${tabId}`);
     };
 
     return (
@@ -78,7 +71,13 @@ const Dashboard: React.FC = () => {
             onLogout={handleLogout}
             useWrapper={false}
         >
-            {renderContent()}
+            <Routes>
+                <Route index element={<Home userName={userName} startGame={startGame} />} />
+                <Route path="play" element={<Play startGame={startGame} />} />
+                <Route path="leaderboard" element={<Leaderboard />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="about" element={<AboutUs />} />
+            </Routes>
         </Layout>
     );
 };

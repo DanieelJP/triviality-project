@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
-import { LOCALES, setLocale } from '../../locales';
+import { setLocale, availableLocales } from '../../locales';
+import type { AvailableLocale } from '../../locales';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLanguage, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 interface CompactLanguageSwitcherProps {
-  currentLocale: string;
+  currentLocale: AvailableLocale;
 }
 
 const CompactLanguageSwitcher: React.FC<CompactLanguageSwitcherProps> = ({ currentLocale }) => {
   const [isOpen, setIsOpen] = useState(false);
   const intl = useIntl();
 
-  const handleChangeLanguage = (locale: string) => {
+  const handleChangeLanguage = (locale: AvailableLocale) => {
     setLocale(locale);
     setIsOpen(false);
   };
 
-  const getLanguageName = (locale: string) => {
+  const getLanguageName = (locale: AvailableLocale) => {
     return intl.formatMessage({ id: `language.${locale}` });
   };
 
@@ -65,7 +66,7 @@ const CompactLanguageSwitcher: React.FC<CompactLanguageSwitcherProps> = ({ curre
             minWidth: '120px'
           }}
         >
-          {Object.values(LOCALES).map((locale) => (
+          {availableLocales.map((locale) => (
             <div
               key={locale}
               onClick={() => handleChangeLanguage(locale)}

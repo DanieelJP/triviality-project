@@ -9,6 +9,9 @@
     padding-bottom: 0;
     margin-bottom: 0;
     box-sizing: border-box;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .leaderboard-container .dashboard-content-wrapper {
@@ -50,4 +53,195 @@
         width: calc(100% - 1.5rem);
         border-radius: 8px;
     }
+}
+
+.leaderboard-filters {
+    margin-bottom: 2rem;
+}
+
+.period-filter,
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.filter-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.filter-button:hover {
+    background: var(--bg-hover);
+}
+
+.filter-button.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.filter-button svg {
+    margin-right: 0.5rem;
+}
+
+.leaderboard-table {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: var(--bg-secondary);
+    transition: transform 0.2s ease;
+}
+
+.leaderboard-row:hover {
+    transform: translateX(5px);
+}
+
+.leaderboard-row.rank-gold {
+    background: linear-gradient(to right, rgba(255, 215, 0, 0.1), var(--bg-secondary));
+}
+
+.leaderboard-row.rank-silver {
+    background: linear-gradient(to right, rgba(192, 192, 192, 0.1), var(--bg-secondary));
+}
+
+.leaderboard-row.rank-bronze {
+    background: linear-gradient(to right, rgba(205, 127, 50, 0.1), var(--bg-secondary));
+}
+
+.rank {
+    width: 80px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.medal {
+    font-size: 1.2rem;
+}
+
+.medal.gold {
+    color: #FFD700;
+}
+
+.medal.silver {
+    color: #C0C0C0;
+}
+
+.medal.bronze {
+    color: #CD7F32;
+}
+
+.medal.default {
+    color: var(--text-tertiary);
+}
+
+.player {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.player-avatar,
+.default-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.player-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.player-name {
+    color: var(--text-primary);
+}
+
+.score {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.user-ranking {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-ranking h3 {
+    margin: 0 0 1rem;
+    color: var(--text-primary);
+}
+
+.ranking-details {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.ranking-details .rank {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.ranking-details .score {
+    font-size: 1.2rem;
+}
+
+.total-players {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--bg-secondary);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message {
+    text-align: center;
+    color: var(--error-color);
+    padding: 2rem;
+    background: var(--error-bg);
+    border-radius: 0.5rem;
+    margin: 2rem 0;
 } 

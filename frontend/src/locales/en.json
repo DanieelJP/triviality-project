@@ -52,12 +52,14 @@
   "game.feedback.fair": "Not bad, but you can improve.",
   "game.feedback.needsPractice": "Keep practicing to improve your score.",
   
-  "dashboard.welcome": "Welcome to Triviality, {userName}!",
+  "dashboard.welcome": "Welcome, {name}!",
   "dashboard.selectTab": "Select a tab",
   "dashboard.stats": "Your Statistics",
   "dashboard.games": "GAMES PLAYED",
   "dashboard.bestScore": "BEST SCORE",
   "dashboard.accuracy": "ACCURACY",
+  "dashboard.avgTime": "AVERAGE TIME",
+  "dashboard.playNow": "Play Now!",
   
   "play.title": "Choose Your Game Mode",
   "play.description": "Different modes to challenge your knowledge and skills",
@@ -73,7 +75,48 @@
   "comingSoon.development": "This feature is under development and will be available soon.",
   "comingSoon.checkBack": "Check back soon to discover new features!",
   
-  "profile.title": "User Profile",
+  "profile": {
+    "error": {
+      "loading": "Error loading profile",
+      "generic": "An error has occurred"
+    },
+    "level": "Level {level}",
+    "xpProgress": "{current} / {total} XP",
+    "nav": {
+      "stats": "Statistics",
+      "achievements": "Achievements",
+      "rankings": "Rankings"
+    },
+    "stats": {
+      "title": "General Statistics",
+      "totalGames": "Total Games",
+      "correctAnswers": "Correct Answers",
+      "accuracy": "Accuracy",
+      "avgTime": "Average Time",
+      "totalPoints": "Total Points",
+      "categoryTitle": "Performance by Category",
+      "difficultyTitle": "Performance by Difficulty",
+      "correctOf": "{correct} of {total} correct",
+      "performance": "Performance",
+      "pointsPerGame": "Points per Game",
+      "pointsEarned": "Points Earned",
+      "remainingPoints": "Remaining Points",
+      "generalMetrics": "General Metrics",
+      "pointsDistribution": "Points Distribution",
+      "values": "Values",
+      "points": "points"
+    },
+    "achievements": {
+      "title": "Unlocked Achievements",
+      "unlockedOn": "Unlocked on {date}"
+    },
+    "ranking": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "all_time": "All Time"
+    }
+  },
   
   "about.title": "About Triviality",
   "about.description": "Triviality is a quiz game platform designed to test your knowledge in various areas.",

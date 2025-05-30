@@ -29,15 +29,62 @@ const axiosInstance = axios.create({
     }
 });
 
+// Variable para evitar múltiples intentos de refresco simultáneos
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
 // Interceptor para manejar errores
 axiosInstance.interceptors.response.use(
     response => response,
-    error => {
-        if (error.response?.status === 401) {
-            // Si el token expiró o es inválido, limpiar el almacenamiento local
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+    async error => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            if (isRefreshing) {
+                try {
+                    // Esperar a que el token se refresque
+                    const token = await new Promise((resolve, reject) => {
+                        failedQueue.push({ resolve, reject });
+                    });
+                    originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                    return axiosInstance(originalRequest);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                // Intentar obtener un nuevo token (aquí deberías implementar tu lógica de refresco)
+                const response = await axiosInstance.post('/api/refresh-token');
+                const token = response.data.access_token;
+                
+                setAuthToken(token);
+                processQueue(null, token);
+                return axiosInstance(originalRequest);
+            } catch (refreshError) {
+                processQueue(refreshError, null);
+                // Si el refresco falla, entonces sí cerrar la sesión
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
         }
         return Promise.reject(error);
     }

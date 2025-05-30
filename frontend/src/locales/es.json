@@ -52,12 +52,13 @@
   "game.feedback.fair": "No está mal, pero puedes mejorar.",
   "game.feedback.needsPractice": "Sigue practicando para mejorar tu puntuación.",
   
-  "dashboard.welcome": "¡Bienvenido a Triviality, {userName}!",
+  "dashboard.welcome": "¡Bienvenido, {name}!",
   "dashboard.selectTab": "Selecciona una pestaña",
   "dashboard.stats": "Tus Estadísticas",
   "dashboard.games": "PARTIDAS JUGADAS",
   "dashboard.bestScore": "MEJOR PUNTUACIÓN",
-  "dashboard.accuracy": "ACIERTOS",
+  "dashboard.accuracy": "PRECISIÓN",
+  "dashboard.avgTime": "TIEMPO PROMEDIO",
   
   "play.title": "Elige tu Modo de Juego",
   "play.description": "Diferentes modos para desafiar tus conocimientos y habilidades",
@@ -73,7 +74,47 @@
   "comingSoon.development": "Esta función está en desarrollo y estará disponible próximamente.",
   "comingSoon.checkBack": "¡Vuelve pronto para descubrir las nuevas funcionalidades!",
   
-  "profile.title": "Perfil de Usuario",
+  "profile": {
+    "error": {
+      "loading": "Error al cargar el perfil",
+      "generic": "Se ha producido un error"
+    },
+    "level": "Nivel {level}",
+    "xpProgress": "{current} / {total} XP",
+    "nav": {
+      "stats": "Estadísticas",
+      "achievements": "Logros",
+      "rankings": "Rankings"
+    },
+    "stats": {
+      "title": "Estadísticas Generales",
+      "totalGames": "Partidas Totales",
+      "correctAnswers": "Respuestas Correctas",
+      "accuracy": "Precisión",
+      "avgTime": "Tiempo Promedio",
+      "totalPoints": "Puntos Totales",
+      "categoryTitle": "Rendimiento por Categoría",
+      "difficultyTitle": "Rendimiento por Dificultad",
+      "correctOf": "{correct} de {total} correctas",
+      "performance": "Rendimiento",
+      "pointsPerGame": "Puntos por Partida",
+      "pointsEarned": "Puntos Ganados",
+      "remainingPoints": "Puntos Restantes",
+      "generalMetrics": "Métricas Generales",
+      "pointsDistribution": "Distribución de Puntos",
+      "values": "Valores"
+    },
+    "achievements": {
+      "title": "Logros Desbloqueados",
+      "unlockedOn": "Desbloqueado el {date}"
+    },
+    "ranking": {
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "all_time": "Total"
+    }
+  },
   
   "about.title": "Acerca de Triviality",
   "about.description": "Triviality es una plataforma de juegos de preguntas y respuestas diseñada para poner a prueba tus conocimientos en diversas áreas.",
