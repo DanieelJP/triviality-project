@@ -172,18 +172,10 @@ if [ ! -f "$SQL_FILE" ]; then
     exit 1
 fi
 
-# Extraer el nombre de la base de datos del archivo SQL
-DB_DATABASE=$(grep -i "CREATE DATABASE" "$SQL_FILE" | sed -n 's/.*CREATE DATABASE[[:space:]]*\([^;]*\).*/\1/p' | tr -d '`')
-if [ -z "$DB_DATABASE" ]; then
-    echo -e "${RED}Error: No se pudo encontrar el nombre de la base de datos en el archivo SQL${NC}"
-    exit 1
-fi
-
-echo -e "${GREEN}Nombre de la base de datos detectado: $DB_DATABASE${NC}"
-
 # Configurar credenciales por defecto
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
+DB_DATABASE="triviality_db"
 DB_USERNAME="laraveluser"
 DB_PASSWORD="Bifidus42"
 
