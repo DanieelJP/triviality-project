@@ -2,247 +2,260 @@
 
 # Colores para mensajes
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 RED='\033[0;31m'
-BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Función para mostrar mensajes
-function echo_color {
-    echo -e "${1}${2}${NC}"
-}
+echo -e "${GREEN}Iniciando configuración del proyecto Triviality...${NC}"
 
-# Función para ejecutar comandos y verificar su resultado
-function run_command {
-    local cmd="$1"
-    local error_msg="$2"
-    
-    echo_color $YELLOW "Ejecutando: $cmd"
-    eval $cmd
-    
-    if [ $? -ne 0 ]; then
-        echo_color $RED "ERROR: $error_msg"
-        return 1
-    else
-        return 0
-    fi
-}
-
-echo_color $BLUE "========================================================"
-echo_color $BLUE "      Configuración Completa de Triviality Project      "
-echo_color $BLUE "========================================================"
-echo
-
-# Verificar que estamos en el directorio correcto
-if [ ! -f "composer.json" ] && [ ! -d "frontend" ]; then
-    if [ -d "/var/www/html/triviality-project" ]; then
-        echo_color $YELLOW "Cambiando al directorio del proyecto..."
-        cd /var/www/html/triviality-project
-    else
-        echo_color $RED "Error: No se puede encontrar el directorio del proyecto."
-        echo_color $RED "Asegúrate de ejecutar este script desde el directorio raíz del proyecto."
+# Verificar si Docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo -e "${YELLOW}Docker no está instalado. Instalando...${NC}"
+    sudo apt-get update
+    sudo apt-get install -y docker.io
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker $USER
+    echo -e "${GREEN}Docker instalado correctamente${NC}"
+    echo -e "${YELLOW}Por favor, cierra sesión y vuelve a iniciar sesión para que los cambios surtan efecto${NC}"
         exit 1
     fi
+
+# Verificar si Docker Compose está instalado
+if ! command -v docker-compose &> /dev/null; then
+    echo -e "${YELLOW}Docker Compose no está instalado. Instalando...${NC}"
+    sudo apt-get update
+    sudo apt-get install -y docker-compose
+    echo -e "${GREEN}Docker Compose instalado correctamente${NC}"
 fi
 
-# 1. Configurar Backend
-echo_color $BLUE "Paso 1: Configurando Backend (Laravel)"
-echo_color $BLUE "-------------------------------------------------------"
-
-if [ -d "backend" ]; then
-    cd backend
-    
-    echo_color $YELLOW "Instalando dependencias de Composer..."
-    run_command "composer install" "No se pudieron instalar las dependencias de Composer."
-    
-    echo_color $YELLOW "Copiando archivo .env si no existe..."
-    if [ ! -f ".env" ]; then
-        run_command "cp .env.example .env" "No se pudo copiar el archivo .env.example"
-        run_command "php artisan key:generate" "No se pudo generar la clave de la aplicación."
-    fi
-    
-    echo_color $YELLOW "Configuración de la base de datos..."
-    # Leer configuración actual
-    DB_CONNECTION=$(grep DB_CONNECTION .env | cut -d '=' -f2)
-    DB_HOST=$(grep DB_HOST .env | cut -d '=' -f2)
-    DB_PORT=$(grep DB_PORT .env | cut -d '=' -f2)
-    DB_DATABASE=$(grep DB_DATABASE .env | cut -d '=' -f2)
-    DB_USERNAME=$(grep DB_USERNAME .env | cut -d '=' -f2)
-    DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d '=' -f2)
-    
-    # Mostrar configuración actual y preguntar si desea modificarla
-    echo_color $YELLOW "Configuración de base de datos actual:"
-    echo "DB_CONNECTION=$DB_CONNECTION"
-    echo "DB_HOST=$DB_HOST"
-    echo "DB_PORT=$DB_PORT"
-    echo "DB_DATABASE=$DB_DATABASE"
-    echo "DB_USERNAME=$DB_USERNAME"
-    echo "DB_PASSWORD=******"  # Por seguridad no mostramos la contraseña real
-    
-    read -p "¿Deseas modificar esta configuración? (s/n): " MODIFY_DB
-    
-    if [[ $MODIFY_DB == "s" || $MODIFY_DB == "S" ]]; then
-        # Solicitar valores para la base de datos
-        read -p "Nombre de la base de datos [$DB_DATABASE]: " NEW_DB_DATABASE
-        read -p "Usuario de la base de datos [$DB_USERNAME]: " NEW_DB_USERNAME
-        read -p "Contraseña de la base de datos (no se mostrará) [dejar vacío para no cambiar]: " -s NEW_DB_PASSWORD
-        echo ""  # Salto de línea después de la contraseña
-        
-        # Usar valores predeterminados si no se proporcionaron nuevos
-        DB_DATABASE=${NEW_DB_DATABASE:-$DB_DATABASE}
-        DB_USERNAME=${NEW_DB_USERNAME:-$DB_USERNAME}
-        
-        # Actualizar el archivo .env
-        sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/" .env
-        sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" .env
-        
-        # Actualizar contraseña solo si se proporcionó una nueva
-        if [ ! -z "$NEW_DB_PASSWORD" ]; then
-            sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$NEW_DB_PASSWORD/" .env
-        fi
-        
-        echo_color $GREEN "Configuración de base de datos actualizada."
-        
-        # Preguntar si desea crear la base de datos
-        read -p "¿Crear la base de datos '$DB_DATABASE'? (s/n): " CREATE_DB
-        if [[ $CREATE_DB == "s" || $CREATE_DB == "S" ]]; then
-            read -p "Ingresa la contraseña de root para MySQL (no se mostrará): " -s MYSQL_ROOT_PASSWORD
-            echo ""  # Salto de línea después de la contraseña
-            
-            echo_color $YELLOW "Creando base de datos..."
-            # Crear base de datos
-            if mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" 2>/dev/null; then
-                echo_color $GREEN "Base de datos '$DB_DATABASE' creada correctamente."
-                
-                # Verificar si el usuario ya existe
-                USER_EXISTS=$(mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT user FROM mysql.user WHERE user='$DB_USERNAME';" 2>/dev/null | grep -c "$DB_USERNAME")
-                
-                if [ "$USER_EXISTS" -eq 0 ]; then
-                    echo_color $YELLOW "Creando usuario '$DB_USERNAME'..."
-                    # Crear usuario y asignar permisos, con contraseña segura
-                    if [ -z "$NEW_DB_PASSWORD" ]; then
-                        # Si no se proporcionó una contraseña, generamos una aleatoria
-                        NEW_DB_PASSWORD=$(openssl rand -base64 12)
-                        sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$NEW_DB_PASSWORD/" .env
-                        echo_color $GREEN "Se generó una contraseña aleatoria y se guardó en el archivo .env"
-                    fi
-                    
-                    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$NEW_DB_PASSWORD'; GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
-                    echo_color $GREEN "Usuario '$DB_USERNAME' creado y permisos asignados."
-                else
-                    echo_color $YELLOW "El usuario '$DB_USERNAME' ya existe. Actualizando permisos..."
-                    # Actualizar permisos y contraseña si se proporcionó una nueva
-                    if [ ! -z "$NEW_DB_PASSWORD" ]; then
-                        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "ALTER USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$NEW_DB_PASSWORD'; GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
-                    else
-                        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
-                    fi
-                    echo_color $GREEN "Permisos actualizados para el usuario '$DB_USERNAME'."
-                fi
-            else
-                echo_color $RED "Error al crear la base de datos. Verifica la contraseña de root de MySQL."
-                echo_color $YELLOW "Puedes crear la base de datos manualmente con: CREATE DATABASE $DB_DATABASE;"
-            fi
-        fi
-    fi
-    
-    echo_color $YELLOW "Ejecutando migraciones de la base de datos..."
-    run_command "php artisan migrate" "No se pudieron ejecutar las migraciones."
-    
-    cd ..
-    echo_color $GREEN "Configuración del backend completada correctamente."
-else
-    echo_color $RED "ERROR: Directorio 'backend' no encontrado."
-    exit 1
+# Verificar si Node.js está instalado
+if ! command -v node &> /dev/null; then
+    echo -e "${YELLOW}Node.js no está instalado. Instalando...${NC}"
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    echo -e "${GREEN}Node.js instalado correctamente${NC}"
 fi
 
-echo
+# Verificar si npm está instalado
+if ! command -v npm &> /dev/null; then
+    echo -e "${YELLOW}npm no está instalado. Instalando...${NC}"
+    sudo apt-get install -y npm
+    echo -e "${GREEN}npm instalado correctamente${NC}"
+fi
 
-# 2. Configurar Frontend
-echo_color $BLUE "Paso 2: Configurando Frontend (React)"
-echo_color $BLUE "-------------------------------------------------------"
+# Verificar si Composer está instalado
+if ! command -v composer &> /dev/null; then
+    echo -e "${YELLOW}Composer no está instalado. Instalando...${NC}"
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    php -r "unlink('composer-setup.php');"
+    echo -e "${GREEN}Composer instalado correctamente${NC}"
+fi
 
-if [ -d "frontend" ]; then
-    echo_color $YELLOW "Instalando Node.js 18.x (LTS)..."
-    run_command "curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -" "No se pudo configurar el repositorio de Node.js"
-    run_command "sudo apt-get install -y nodejs" "No se pudo instalar Node.js"
+# Verificar si MySQL está instalado
+if ! command -v mysql &> /dev/null; then
+    echo -e "${YELLOW}MySQL no está instalado. Instalando...${NC}"
+    sudo apt-get update
+    sudo apt-get install -y mysql-server
+    sudo systemctl start mysql
+    sudo systemctl enable mysql
+    echo -e "${GREEN}MySQL instalado correctamente${NC}"
     
+    # Configurar MySQL para permitir autenticación con contraseña
+    echo -e "${YELLOW}Configurando MySQL...${NC}"
+    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
+    sudo mysql -e "FLUSH PRIVILEGES;"
+    echo -e "${GREEN}MySQL configurado correctamente${NC}"
+fi
+
+echo -e "${GREEN}Verificando requisitos previos...${NC}"
+
+# Verificar si el archivo .env.example existe
+if [ ! -f .env.example ]; then
+    echo -e "${RED}El archivo .env.example no existe. Creando archivo .env.example...${NC}"
+    cat > .env.example << EOL
+APP_NAME=Triviality
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=triviality
+DB_USERNAME=laraveluser
+DB_PASSWORD=Bifidus42
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_APP_NAME="${APP_NAME}"
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+LIBRETRANSLATE_API_URL=http://localhost:5000
+LIBRETRANSLATE_API_KEY=
+EOL
+    echo -e "${GREEN}Archivo .env.example creado correctamente${NC}"
+fi
+
+echo -e "${GREEN}Configurando el entorno...${NC}"
+
+# Copiar .env.example a .env si no existe
+if [ ! -f .env ]; then
+    cp .env.example .env
+    echo -e "${GREEN}Archivo .env creado desde .env.example${NC}"
+fi
+
+# Instalar dependencias del backend
+echo -e "${GREEN}Instalando dependencias del backend...${NC}"
+cd backend
+composer install
+cd ..
+
+# Instalar dependencias del frontend
+echo -e "${GREEN}Instalando dependencias del frontend...${NC}"
     cd frontend
-    
-    echo_color $YELLOW "Instalando dependencias de Node.js y librería de routing..."
-    run_command "rm -rf node_modules package-lock.json" "No se pudo limpiar instalaciones previas"
-    run_command "npm install --legacy-peer-deps --no-audit" "No se pudo instalar dependencias base"
-    run_command "npm install react-router-dom@6.22.3 --legacy-peer-deps --no-audit" "No se pudo instalar React-Dom"
-    run_command "npm install --save-dev @types/react-router-dom --legacy-peer-deps --no-audit" "No se pudieron instalar dependencias de React-Dom"
-    
-    echo_color $YELLOW "Intentando corregir vulnerabilidades conocidas..."
-    run_command "npm audit fix --force" "No se pudieron corregir todas las vulnerabilidades"
-    
-    cd ..
-    echo_color $GREEN "Configuración del frontend completada correctamente."
-else
-    echo_color $RED "ERROR: Directorio 'frontend' no encontrado."
+npm install
+npm audit fix --force
+cd ..
+
+# Configurar la base de datos
+echo -e "${GREEN}Configurando la base de datos...${NC}"
+
+# Verificar si existe el archivo SQL
+SQL_FILE="scripts/sql/triviality_db.sql"
+if [ ! -f "$SQL_FILE" ]; then
+    echo -e "${RED}Error: No se encuentra el archivo SQL en $SQL_FILE${NC}"
     exit 1
 fi
 
-echo
+# Configurar credenciales por defecto
+DB_HOST="127.0.0.1"
+DB_PORT="3306"
+DB_DATABASE="triviality_db"
+DB_USERNAME="laraveluser"
+DB_PASSWORD="Bifidus42"
 
-# 3. Configurar Traductor Local
-echo_color $BLUE "Paso 3: Configurando Traductor Local (LibreTranslate)"
-echo_color $BLUE "-------------------------------------------------------"
+# Actualizar el archivo .env con las credenciales por defecto
+sed -i "s/^DB_HOST=.*/DB_HOST=$DB_HOST/" .env
+sed -i "s/^DB_PORT=.*/DB_PORT=$DB_PORT/" .env
+sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/" .env
+sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" .env
+sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" .env
 
-echo_color $YELLOW "Ejecutando script de configuración del traductor..."
+# Crear usuario y base de datos usando sudo
+echo -e "${GREEN}Creando usuario y base de datos...${NC}"
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+sudo mysql -e "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
+sudo mysql -e "FLUSH PRIVILEGES;"
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}Usuario y base de datos creados correctamente${NC}"
+else
+    echo -e "${RED}Error al crear usuario o base de datos${NC}"
+    exit 1
+fi
+
+# Importar el archivo SQL
+echo -e "${GREEN}Importando el archivo SQL...${NC}"
+if mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < "$SQL_FILE"; then
+    echo -e "${GREEN}Archivo SQL importado correctamente${NC}"
+else
+    echo -e "${RED}Error al importar el archivo SQL${NC}"
+    exit 1
+fi
+
+# Generar clave de aplicación
+echo -e "${GREEN}Generando clave de aplicación...${NC}"
+cd backend
+php artisan key:generate
+cd ..
+
+# Limpiar caché
+echo -e "${GREEN}Limpiando caché...${NC}"
+cd backend
+php artisan config:clear
+php artisan cache:clear
+cd ..
+
+# Configurar el traductor
+echo -e "${GREEN}Configurando el servicio de traducción...${NC}"
 chmod +x scripts/setup-translator.sh
 ./scripts/setup-translator.sh
 
-echo
+# Iniciar los servicios
+echo -e "${GREEN}Iniciando servicios...${NC}"
 
-# 4. Verificar servicios
-echo_color $BLUE "Paso 4: Verificando servicios"
-echo_color $BLUE "-------------------------------------------------------"
+# Iniciar el servicio de traducción
+echo -e "${GREEN}Iniciando servicio de traducción...${NC}"
+chmod +x scripts/start-libretranslate.sh
+./scripts/start-libretranslate.sh
 
-echo_color $YELLOW "¿Deseas iniciar los servicios ahora? (s/n): "
-read START_SERVICES
-
-if [[ $START_SERVICES == "s" || $START_SERVICES == "S" ]]; then
-    echo_color $YELLOW "Iniciando servidor Laravel (en segundo plano)..."
+# Iniciar el backend
+echo -e "${GREEN}Iniciando backend...${NC}"
     cd backend
-    php artisan serve > /dev/null 2>&1 &
-    LARAVEL_PID=$!
+php artisan serve &
     cd ..
     
-    echo_color $YELLOW "Iniciando servidor React (en segundo plano)..."
+# Iniciar el frontend
+echo -e "${GREEN}Iniciando frontend...${NC}"
     cd frontend
-    npm start > /dev/null 2>&1 &
-    REACT_PID=$!
-    cd ..
-    
-    echo_color $YELLOW "Esperando a que los servicios estén listos..."
-    sleep 10
-    
-    echo_color $YELLOW "Ejecutando verificación de servicios..."
+npm run dev &
+cd ..
+
+# Verificar que todos los servicios estén funcionando
+echo -e "${GREEN}Verificando servicios...${NC}"
     chmod +x scripts/check-services.sh
     ./scripts/check-services.sh
     
-    echo
-    echo_color $YELLOW "Servicios iniciados:"
-    echo "- Laravel (PID: $LARAVEL_PID)"
-    echo "- React (PID: $REACT_PID)"
-    echo "- LibreTranslate (Docker)"
-    
-    echo
-    echo_color $GREEN "¡Configuración completada! La aplicación debería estar disponible en:"
-    echo "- Frontend: http://localhost:3000"
-    echo "- Backend API: http://localhost:8000/api"
-    echo "- Traductor: http://localhost:5000"
-else
-    echo_color $YELLOW "Para iniciar los servicios manualmente:"
-    echo "- Backend: cd backend && php artisan serve"
-    echo "- Frontend: cd frontend && npm start"
-    echo "- Verificar servicios: ./scripts/check-services.sh"
-fi
+echo -e "${GREEN}¡Configuración completada!${NC}"
+echo -e "${GREEN}El backend está corriendo en http://localhost:8000${NC}"
+echo -e "${GREEN}El frontend está corriendo en http://localhost:5173${NC}"
+echo -e "${GREEN}El servicio de traducción está corriendo en http://localhost:5000${NC}"
 
-echo
-echo_color $BLUE "========================================================"
-echo_color $GREEN "¡Configuración completada con éxito!"
-echo_color $BLUE "========================================================" 
+# Mantener el script en ejecución
+wait 
