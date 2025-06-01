@@ -208,6 +208,11 @@ Si las traducciones no funcionan correctamente:
 3. 🔄 Reinicia el contenedor si es necesario: `docker restart libretranslate`
 4. 🌐 Verifica si puedes acceder a la interfaz web: http://localhost:5000
 
+### Se puede comprobar si los servicios andan activos
+```bash
+./scripts/check-services.sh
+```
+
 ### 🔒 Problemas con permisos
 Si experimentas problemas con permisos en la carpeta del proyecto:
 
