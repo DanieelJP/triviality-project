@@ -18,8 +18,8 @@ if ! command -v docker &> /dev/null; then
     sudo usermod -aG docker $USER
     echo -e "${GREEN}Docker instalado correctamente${NC}"
     echo -e "${YELLOW}Por favor, cierra sesión y vuelve a iniciar sesión para que los cambios surtan efecto${NC}"
-    exit 1
-fi
+        exit 1
+    fi
 
 # Verificar si Docker Compose está instalado
 if ! command -v docker-compose &> /dev/null; then
@@ -157,7 +157,7 @@ cd ..
 
 # Instalar dependencias del frontend
 echo -e "${GREEN}Instalando dependencias del frontend...${NC}"
-cd frontend
+    cd frontend
 npm install
 npm audit fix --force
 cd ..
@@ -165,10 +165,25 @@ cd ..
 # Configurar la base de datos
 echo -e "${GREEN}Configurando la base de datos...${NC}"
 
+# Verificar si existe el archivo SQL
+SQL_FILE="scripts/sql/triviality_db.sql"
+if [ ! -f "$SQL_FILE" ]; then
+    echo -e "${RED}Error: No se encuentra el archivo SQL en $SQL_FILE${NC}"
+    exit 1
+fi
+
+# Extraer el nombre de la base de datos del archivo SQL
+DB_DATABASE=$(grep -i "CREATE DATABASE" "$SQL_FILE" | sed -n 's/.*CREATE DATABASE[[:space:]]*\([^;]*\).*/\1/p' | tr -d '`')
+if [ -z "$DB_DATABASE" ]; then
+    echo -e "${RED}Error: No se pudo encontrar el nombre de la base de datos en el archivo SQL${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Nombre de la base de datos detectado: $DB_DATABASE${NC}"
+
 # Configurar credenciales por defecto
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
-DB_DATABASE="triviality"
 DB_USERNAME="laraveluser"
 DB_PASSWORD="Bifidus42"
 
@@ -195,7 +210,12 @@ fi
 
 # Importar el archivo SQL
 echo -e "${GREEN}Importando el archivo SQL...${NC}"
-mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < scripts/sql/triviality_db.sql
+if mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < "$SQL_FILE"; then
+    echo -e "${GREEN}Archivo SQL importado correctamente${NC}"
+else
+    echo -e "${RED}Error al importar el archivo SQL${NC}"
+    exit 1
+fi
 
 # Generar clave de aplicación
 echo -e "${GREEN}Generando clave de aplicación...${NC}"
@@ -225,21 +245,21 @@ chmod +x scripts/start-libretranslate.sh
 
 # Iniciar el backend
 echo -e "${GREEN}Iniciando backend...${NC}"
-cd backend
+    cd backend
 php artisan serve &
-cd ..
-
+    cd ..
+    
 # Iniciar el frontend
 echo -e "${GREEN}Iniciando frontend...${NC}"
-cd frontend
+    cd frontend
 npm run dev &
 cd ..
 
 # Verificar que todos los servicios estén funcionando
 echo -e "${GREEN}Verificando servicios...${NC}"
-chmod +x scripts/check-services.sh
-./scripts/check-services.sh
-
+    chmod +x scripts/check-services.sh
+    ./scripts/check-services.sh
+    
 echo -e "${GREEN}¡Configuración completada!${NC}"
 echo -e "${GREEN}El backend está corriendo en http://localhost:8000${NC}"
 echo -e "${GREEN}El frontend está corriendo en http://localhost:5173${NC}"

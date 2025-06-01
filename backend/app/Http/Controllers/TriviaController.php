@@ -48,16 +48,16 @@ class TriviaController extends Controller
             $questions = [];
             
             while (count($questions) < $amount && $attempts < $maxAttempts) {
-                $response = Http::timeout(5)->get($this->baseUrl, [
+            $response = Http::timeout(5)->get($this->baseUrl, [
                     'amount' => $amount * 2, // Pedimos el doble para tener más probabilidad de obtener suficientes
                     'difficulty' => $difficulty,
-                    'type' => 'multiple'
-                ]);
+                'type' => 'multiple'
+            ]);
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    
-                    if (isset($data['results']) && is_array($data['results'])) {
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                if (isset($data['results']) && is_array($data['results'])) {
                         // Filtrar solo las preguntas de la dificultad solicitada
                         $filteredQuestions = array_filter($data['results'], function($q) use ($difficulty) {
                             return strtolower($q['difficulty']) === strtolower($difficulty);
@@ -82,15 +82,15 @@ class TriviaController extends Controller
                 return response()->json(['error' => 'No se pudieron obtener suficientes preguntas de la dificultad solicitada'], 500);
             }
 
-            // Actualizar la propiedad targetLang en TranslationService
-            $this->translationService->setTargetLang($language);
-            
-            // Usar la traducción optimizada
+                    // Actualizar la propiedad targetLang en TranslationService
+                    $this->translationService->setTargetLang($language);
+                    
+                    // Usar la traducción optimizada
             $translatedQuestions = $this->translationService->translateQuestionsOptimized($questions);
-            
-            $endTime = microtime(true);
-            $executionTime = ($endTime - $startTime);
-            Log::info("Tiempo de ejecución para obtener y traducir preguntas: " . $executionTime . " segundos (idioma: $language)");
+                
+                $endTime = microtime(true);
+                $executionTime = ($endTime - $startTime);
+                Log::info("Tiempo de ejecución para obtener y traducir preguntas: " . $executionTime . " segundos (idioma: $language)");
 
             return response()->json(['results' => $translatedQuestions]);
         } catch (\Exception $e) {
