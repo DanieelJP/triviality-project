@@ -61,6 +61,12 @@ if ! command -v mysql &> /dev/null; then
     sudo systemctl start mysql
     sudo systemctl enable mysql
     echo -e "${GREEN}MySQL instalado correctamente${NC}"
+    
+    # Configurar MySQL para permitir autenticación con contraseña
+    echo -e "${YELLOW}Configurando MySQL...${NC}"
+    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
+    sudo mysql -e "FLUSH PRIVILEGES;"
+    echo -e "${GREEN}MySQL configurado correctamente${NC}"
 fi
 
 echo -e "${GREEN}Verificando requisitos previos...${NC}"
@@ -153,6 +159,7 @@ cd ..
 echo -e "${GREEN}Instalando dependencias del frontend...${NC}"
 cd frontend
 npm install
+npm audit fix --force
 cd ..
 
 # Configurar la base de datos
@@ -174,12 +181,10 @@ sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" .env
 
 # Crear usuario y base de datos usando sudo
 echo -e "${GREEN}Creando usuario y base de datos...${NC}"
-sudo mysql << EOF
-CREATE DATABASE IF NOT EXISTS $DB_DATABASE;
-CREATE USER IF NOT EXISTS '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
-GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';
-FLUSH PRIVILEGES;
-EOF
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+sudo mysql -e "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
+sudo mysql -e "FLUSH PRIVILEGES;"
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Usuario y base de datos creados correctamente${NC}"
