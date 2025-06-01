@@ -81,16 +81,40 @@ cd ..
 # Configurar la base de datos
 echo -e "${GREEN}Configurando la base de datos...${NC}"
 
-# Obtener las credenciales de la base de datos del archivo .env
-DB_HOST=$(grep DB_HOST .env | cut -d '=' -f2)
-DB_PORT=$(grep DB_PORT .env | cut -d '=' -f2)
-DB_DATABASE=$(grep DB_DATABASE .env | cut -d '=' -f2)
-DB_USERNAME=$(grep DB_USERNAME .env | cut -d '=' -f2)
-DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d '=' -f2)
+# Configurar credenciales por defecto
+DB_HOST="127.0.0.1"
+DB_PORT="3306"
+DB_DATABASE="triviality"
+DB_USERNAME="laraveluser"
+DB_PASSWORD="Bifidus42"
 
-# Crear la base de datos si no existe
-echo -e "${GREEN}Creando la base de datos si no existe...${NC}"
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+# Actualizar el archivo .env con las credenciales por defecto
+sed -i "s/^DB_HOST=.*/DB_HOST=$DB_HOST/" .env
+sed -i "s/^DB_PORT=.*/DB_PORT=$DB_PORT/" .env
+sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/" .env
+sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" .env
+sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" .env
+
+# Solicitar contraseña de root de MySQL
+echo -e "${YELLOW}Se necesita la contraseña de root de MySQL para configurar la base de datos...${NC}"
+read -sp "Contraseña de root de MySQL: " MYSQL_ROOT_PASSWORD
+echo ""
+
+# Crear usuario y base de datos
+echo -e "${GREEN}Creando usuario y base de datos...${NC}"
+mysql -h $DB_HOST -P $DB_PORT -u root -p"$MYSQL_ROOT_PASSWORD" << EOF
+CREATE DATABASE IF NOT EXISTS $DB_DATABASE;
+CREATE USER IF NOT EXISTS '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}Usuario y base de datos creados correctamente${NC}"
+else
+    echo -e "${RED}Error al crear usuario o base de datos${NC}"
+    exit 1
+fi
 
 # Importar el archivo SQL
 echo -e "${GREEN}Importando el archivo SQL...${NC}"
