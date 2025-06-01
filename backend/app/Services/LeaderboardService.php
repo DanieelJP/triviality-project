@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Leaderboard;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -47,21 +46,6 @@ class LeaderboardService
                 $leaderboard->save();
             }
         });
-    }
-
-    /**
-     * Obtiene la fecha de inicio para un período
-     */
-    private function getPeriodStartDate(string $period): Carbon
-    {
-        $now = Carbon::now();
-        
-        return match ($period) {
-            'daily' => $now->startOfDay(),
-            'weekly' => $now->startOfWeek(),
-            'monthly' => $now->startOfMonth(),
-            default => Carbon::createFromTimestamp(0)
-        };
     }
 
     /**
@@ -176,6 +160,20 @@ class LeaderboardService
             'avg_response_time' => round($userStats->avg_response_time, 2),
             'total_players' => $totalPlayers
         ];
+    }
+
+    /**
+     * Obtiene la fecha de inicio para un período
+     */
+    private function getPeriodStartDate(string $period): Carbon
+    {
+        $now = Carbon::now();
+        return match ($period) {
+            'daily' => $now->startOfDay(),
+            'weekly' => $now->startOfWeek(),
+            'monthly' => $now->startOfMonth(),
+            default => Carbon::createFromTimestamp(0)
+        };
     }
 
     /**

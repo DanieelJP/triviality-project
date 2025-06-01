@@ -140,13 +140,14 @@
     height: 2.5rem;
     border-radius: 50%;
     object-fit: cover;
-    background: #f3eaea;
-    color: #b71c1c;
+    background: #b71c1c;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    border: 2px solid #ececec;
+    /* border: 4px solid #ececec; */
+    box-shadow: none;
 }
 
 .player-info {

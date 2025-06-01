@@ -417,7 +417,7 @@
     .dashboard-content-wrapper {
         padding: 1rem;
     }
-}
+} 
 
 .main-content {
     background: linear-gradient(135deg, var(--color-red-dark) 0%, var(--color-red-medium) 50%, var(--color-red-light) 100%);

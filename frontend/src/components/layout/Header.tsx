@@ -101,6 +101,14 @@ const Header: React.FC<HeaderProps> = ({
               <span className="user-name">{userName}</span>
             </div>
           
+          {/* Botón de logout solo visible en escritorio */}
+          <button className="logout-header-btn" onClick={onLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} />
+            <span className="logout-text">
+              <FormattedMessage id="nav.logout" defaultMessage="Log out" />
+            </span>
+          </button>
+          
           {/* Botón de menú hamburguesa para móviles */}
           <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
             <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} />
@@ -146,7 +154,7 @@ const Header: React.FC<HeaderProps> = ({
         </nav>
         
         <div className="mobile-user-info">
-          <div className="mobile-user-profile">
+          <div className="mobile-user-profile" onClick={() => handleTabChange('profile')}>
             <div className="user-avatar large">{userName.charAt(0)}</div>
             <span className="mobile-user-name">{userName}</span>
           </div>

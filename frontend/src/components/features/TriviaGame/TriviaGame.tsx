@@ -514,10 +514,10 @@ const TriviaGame: React.FC = () => {
                         </span>
                         <span className="difficulty-tag">
                             <FormattedMessage 
-                                id={`game.difficult.${currentQ.difficulty}`} 
+                                id={`game.difficult.${selectedDifficulty}`} 
                                 defaultMessage={
-                                    currentQ.difficulty === 'easy' ? 'Fácil' : 
-                                    currentQ.difficulty === 'medium' ? 'Medio' : 'Difícil'
+                                    selectedDifficulty === 'easy' ? 'Fácil' : 
+                                    selectedDifficulty === 'medium' ? 'Medio' : 'Difícil'
                                 } 
                             />
                         </span>

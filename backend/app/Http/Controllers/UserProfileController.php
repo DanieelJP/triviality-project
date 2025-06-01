@@ -153,6 +153,19 @@ class UserProfileController extends Controller
         
         $accuracy = $totalQuestions > 0 ? ($totalCorrectAnswers / $totalQuestions) * 100 : 0;
         
+        // Obtener las últimas 10 partidas
+        $recentGames = Game::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get()
+            ->map(function ($game) {
+                return [
+                    'game_id' => $game->id,
+                    'points' => $game->total_points,
+                    'date' => $game->created_at->format('Y-m-d H:i:s')
+                ];
+            });
+        
         // Obtener logros
         $achievements = UserAchievement::where('user_id', $user->id)
             ->with('achievement')
@@ -187,7 +200,8 @@ class UserProfileController extends Controller
                 'total_points' => $totalPoints,
                 'accuracy' => round($accuracy, 2),
                 'avg_response_time' => round($avgResponseTime, 2),
-                'achievements' => $achievements
+                'achievements' => $achievements,
+                'recent_games' => $recentGames
             ],
             'level_progress' => [
                 'current_level' => $currentLevel,

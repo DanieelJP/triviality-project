@@ -27,7 +27,7 @@ const DifficultyStats: React.FC<DifficultyStatsProps> = ({ stats }) => {
 
     return (
         <div className="difficulty-stats">
-            <h3>{intl.formatMessage({ id: 'profile.stats.difficultyPerformance', defaultMessage: 'Performance by Difficulty' })}</h3>
+            <h3>{intl.formatMessage({ id: 'profile.stats.difficultyPerformance', defaultMessage: 'Rendimiento por Dificultad' })}</h3>
             <div className="chart-container">
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart
@@ -47,14 +47,14 @@ const DifficultyStats: React.FC<DifficultyStatsProps> = ({ stats }) => {
                             height={60}
                             interval={0}
                             label={{
-                                value: intl.formatMessage({ id: 'profile.stats.difficulties', defaultMessage: 'Difficulties' }),
+                                value: intl.formatMessage({ id: 'profile.stats.difficulties', defaultMessage: 'Dificultades' }),
                                 position: 'insideBottom',
                                 offset: -10
                             }}
                         />
                         <YAxis
                             label={{
-                                value: intl.formatMessage({ id: 'profile.stats.values', defaultMessage: 'Values' }),
+                                value: intl.formatMessage({ id: 'profile.stats.values', defaultMessage: 'Valores' }),
                                 angle: -90,
                                 position: 'insideLeft'
                             }}
@@ -63,11 +63,11 @@ const DifficultyStats: React.FC<DifficultyStatsProps> = ({ stats }) => {
                             formatter={(value: number, name: string) => {
                                 switch (name) {
                                     case 'total_questions':
-                                        return [value, intl.formatMessage({ id: 'profile.stats.totalQuestions', defaultMessage: 'Total Questions' })];
+                                        return [value, intl.formatMessage({ id: 'profile.stats.totalQuestions', defaultMessage: 'Total de Preguntas' })];
                                     case 'correct_answers':
-                                        return [value, intl.formatMessage({ id: 'profile.stats.correctAnswers', defaultMessage: 'Correct Answers' })];
+                                        return [value, intl.formatMessage({ id: 'profile.stats.correctAnswers', defaultMessage: 'Respuestas Correctas' })];
                                     case 'accuracy_percentage':
-                                        return [`${value}%`, intl.formatMessage({ id: 'profile.stats.accuracy', defaultMessage: 'Accuracy' })];
+                                        return [`${value}%`, intl.formatMessage({ id: 'profile.stats.accuracy', defaultMessage: 'Precisión' })];
                                     default:
                                         return [value, name];
                                 }
@@ -77,11 +77,11 @@ const DifficultyStats: React.FC<DifficultyStatsProps> = ({ stats }) => {
                             formatter={(value: string) => {
                                 switch (value) {
                                     case 'total_questions':
-                                        return intl.formatMessage({ id: 'profile.stats.totalQuestions', defaultMessage: 'Total Questions' });
+                                        return intl.formatMessage({ id: 'profile.stats.totalQuestions', defaultMessage: 'Total de Preguntas' });
                                     case 'correct_answers':
-                                        return intl.formatMessage({ id: 'profile.stats.correctAnswers', defaultMessage: 'Correct Answers' });
+                                        return intl.formatMessage({ id: 'profile.stats.correctAnswers', defaultMessage: 'Respuestas Correctas' });
                                     case 'accuracy_percentage':
-                                        return intl.formatMessage({ id: 'profile.stats.accuracy', defaultMessage: 'Accuracy' });
+                                        return intl.formatMessage({ id: 'profile.stats.accuracy', defaultMessage: 'Precisión' });
                                     default:
                                         return value;
                                 }

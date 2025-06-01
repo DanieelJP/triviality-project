@@ -102,7 +102,11 @@
       "remainingPoints": "Puntos Restantes",
       "generalMetrics": "Métricas Generales",
       "pointsDistribution": "Distribución de Puntos",
-      "values": "Valores"
+      "values": "Valores",
+      "performanceMetrics": "Métricas de Rendimiento",
+      "recentGames": "Últimas Partidas",
+      "potentialPoints": "Puntos Potenciales",
+      "gameNumber": "Partida {number}"
     },
     "achievements": {
       "title": "Logros Desbloqueados",
