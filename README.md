@@ -1,7 +1,7 @@
 # 🎮 Triviality Project
 
 <div align="center">
-  <img src="frontend/public/logo.svg" alt="Triviality Logo" width="200"/>
+  <img src="frontend/src/assets/logo.png" alt="Triviality Logo" width="200"/>
   <br/>
   <p><i>¡Juega, aprende y compite en el mejor juego de trivia!</i></p>
 </div>
