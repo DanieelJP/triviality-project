@@ -61,14 +61,6 @@ if ! command -v mysql &> /dev/null; then
     sudo systemctl start mysql
     sudo systemctl enable mysql
     echo -e "${GREEN}MySQL instalado correctamente${NC}"
-    
-    # Configurar contraseña de root
-    echo -e "${YELLOW}Configurando contraseña de root de MySQL...${NC}"
-    read -sp "Ingresa la contraseña de root para MySQL: " MYSQL_ROOT_PASSWORD
-    echo ""
-    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASSWORD';"
-    sudo mysql -e "FLUSH PRIVILEGES;"
-    echo -e "${GREEN}Contraseña de root configurada correctamente${NC}"
 fi
 
 echo -e "${GREEN}Verificando requisitos previos...${NC}"
@@ -180,14 +172,9 @@ sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/" .env
 sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" .env
 sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" .env
 
-# Solicitar contraseña de root de MySQL
-echo -e "${YELLOW}Se necesita la contraseña de root de MySQL para configurar la base de datos...${NC}"
-read -sp "Contraseña de root de MySQL: " MYSQL_ROOT_PASSWORD
-echo ""
-
-# Crear usuario y base de datos
+# Crear usuario y base de datos usando sudo
 echo -e "${GREEN}Creando usuario y base de datos...${NC}"
-mysql -h $DB_HOST -P $DB_PORT -u root -p"$MYSQL_ROOT_PASSWORD" << EOF
+sudo mysql << EOF
 CREATE DATABASE IF NOT EXISTS $DB_DATABASE;
 CREATE USER IF NOT EXISTS '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
 GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';
@@ -203,7 +190,7 @@ fi
 
 # Importar el archivo SQL
 echo -e "${GREEN}Importando el archivo SQL...${NC}"
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < scripts/sql/triviality_db.sql
+mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < scripts/sql/triviality_db.sql
 
 # Generar clave de aplicación
 echo -e "${GREEN}Generando clave de aplicación...${NC}"
