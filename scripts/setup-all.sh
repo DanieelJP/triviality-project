@@ -160,11 +160,17 @@ php artisan config:clear
 php artisan cache:clear
 cd ..
 
+# Configurar el traductor
+echo -e "${GREEN}Configurando el servicio de traducción...${NC}"
+chmod +x scripts/setup-translator.sh
+./scripts/setup-translator.sh
+
 # Iniciar los servicios
 echo -e "${GREEN}Iniciando servicios...${NC}"
 
 # Iniciar el servicio de traducción
 echo -e "${GREEN}Iniciando servicio de traducción...${NC}"
+chmod +x scripts/start-libretranslate.sh
 ./scripts/start-libretranslate.sh
 
 # Iniciar el backend
@@ -178,6 +184,11 @@ echo -e "${GREEN}Iniciando frontend...${NC}"
 cd frontend
 npm run dev &
 cd ..
+
+# Verificar que todos los servicios estén funcionando
+echo -e "${GREEN}Verificando servicios...${NC}"
+chmod +x scripts/check-services.sh
+./scripts/check-services.sh
 
 echo -e "${GREEN}¡Configuración completada!${NC}"
 echo -e "${GREEN}El backend está corriendo en http://localhost:8000${NC}"
