@@ -47,8 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/experience', [UserProfileController::class, 'updateExperience']);
 
     // Rutas de tablero de clasificación
-    Route::get('/leaderboard', [LeaderboardController::class, 'getRanking']);
-    Route::get('/leaderboard/user', [LeaderboardController::class, 'getUserRanking']);
+    Route::get('/leaderboard', [LeaderboardController::class, 'index']);
+    Route::get('/leaderboard/user', [LeaderboardController::class, 'userRanking']);
     Route::post('/leaderboard/score', [LeaderboardController::class, 'updateScore']);
 
     Route::post('/games', [GameController::class, 'store']);

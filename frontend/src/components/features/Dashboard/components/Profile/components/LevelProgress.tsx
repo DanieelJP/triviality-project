@@ -19,7 +19,7 @@ const LevelProgress: React.FC<LevelProgressProps> = ({ progress }) => {
             <div className="level-info">
                 <span className="level-text">
                     {intl.formatMessage(
-                        { id: 'profile.level', defaultMessage: 'Level {level}' },
+                        { id: 'profile.level', defaultMessage: 'Nivel {level}' },
                         { level: progress.current_level }
                     )}
                 </span>

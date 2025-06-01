@@ -36,33 +36,63 @@ class TriviaController extends Controller
             
             // Obtener el idioma seleccionado (por defecto español)
             $language = $request->input('language', 'es');
+            $difficulty = $request->input('difficulty', 'medium');
+            $amount = $request->input('amount', 10);
             
-            $response = Http::timeout(5)->get($this->baseUrl, [
-                'amount' => $request->input('amount', 10),
-                'difficulty' => $request->input('difficulty', 'medium'),
-                'type' => 'multiple'
-            ]);
+            // Log de la dificultad solicitada
+            Log::info("Dificultad solicitada: " . $difficulty);
+            
+            // Hacer múltiples intentos hasta obtener suficientes preguntas de la dificultad correcta
+            $attempts = 0;
+            $maxAttempts = 5;
+            $questions = [];
+            
+            while (count($questions) < $amount && $attempts < $maxAttempts) {
+                $response = Http::timeout(5)->get($this->baseUrl, [
+                    'amount' => $amount * 2, // Pedimos el doble para tener más probabilidad de obtener suficientes
+                    'difficulty' => $difficulty,
+                    'type' => 'multiple'
+                ]);
 
-            if ($response->successful()) {
-                $data = $response->json();
-                
-                if (isset($data['results']) && is_array($data['results'])) {
-                    // Actualizar la propiedad targetLang en TranslationService
-                    $this->translationService->setTargetLang($language);
+                if ($response->successful()) {
+                    $data = $response->json();
                     
-                    // Usar la traducción optimizada
-                    $data['results'] = $this->translationService->translateQuestionsOptimized($data['results']);
+                    if (isset($data['results']) && is_array($data['results'])) {
+                        // Filtrar solo las preguntas de la dificultad solicitada
+                        $filteredQuestions = array_filter($data['results'], function($q) use ($difficulty) {
+                            return strtolower($q['difficulty']) === strtolower($difficulty);
+                        });
+                        
+                        // Añadir las preguntas filtradas al array
+                        $questions = array_merge($questions, $filteredQuestions);
+                        
+                        // Si ya tenemos suficientes, cortamos el array
+                        if (count($questions) >= $amount) {
+                            $questions = array_slice($questions, 0, $amount);
+                            break;
+                        }
+                    }
                 }
                 
-                $endTime = microtime(true);
-                $executionTime = ($endTime - $startTime);
-                Log::info("Tiempo de ejecución para obtener y traducir preguntas: " . $executionTime . " segundos (idioma: $language)");
-
-                return response()->json($data);
+                $attempts++;
+            }
+            
+            if (count($questions) < $amount) {
+                Log::warning("No se pudieron obtener suficientes preguntas de dificultad $difficulty después de $maxAttempts intentos");
+                return response()->json(['error' => 'No se pudieron obtener suficientes preguntas de la dificultad solicitada'], 500);
             }
 
-            Log::error('OpenTDB API error: ' . $response->body());
-            return response()->json(['error' => 'Error al obtener preguntas'], 500);
+            // Actualizar la propiedad targetLang en TranslationService
+            $this->translationService->setTargetLang($language);
+            
+            // Usar la traducción optimizada
+            $translatedQuestions = $this->translationService->translateQuestionsOptimized($questions);
+            
+            $endTime = microtime(true);
+            $executionTime = ($endTime - $startTime);
+            Log::info("Tiempo de ejecución para obtener y traducir preguntas: " . $executionTime . " segundos (idioma: $language)");
+
+            return response()->json(['results' => $translatedQuestions]);
         } catch (\Exception $e) {
             Log::error('TriviaController error: ' . $e->getMessage());
             return response()->json(['error' => 'Error del servidor'], 500);
@@ -197,15 +227,6 @@ class TriviaController extends Controller
                 }
 
                 Log::info('Respuestas guardadas');
-
-                // Actualizar puntuaciones en el tablero de clasificación
-                $this->leaderboardService->updateScores(
-                    $user,
-                    $game->total_points,
-                    $request->category
-                );
-
-                Log::info('Puntuaciones actualizadas en el tablero');
 
                 // Calcular bonificaciones de experiencia
                 $experienceGained = $game->total_points; // Base XP igual a los puntos ganados

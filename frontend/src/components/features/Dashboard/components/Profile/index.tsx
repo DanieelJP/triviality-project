@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 import './Profile.css';
 import axios from '../../../../../config/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faTrophy, faChartLine, faMedal } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faTrophy, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import UserStats from './components/UserStats';
 import Achievements from './components/Achievements';
 import CategoryStats from './components/CategoryStats';
@@ -37,11 +37,6 @@ interface ProfileData {
         next_level_xp: number;
         progress_percentage: number;
     };
-    rankings: Array<{
-        period: string;
-        score: number;
-        rank: number;
-    }>;
 }
 
 const Profile: React.FC = () => {
@@ -60,7 +55,7 @@ const Profile: React.FC = () => {
             } catch (err) {
                 setError(intl.formatMessage({ 
                     id: 'profile.error.loading', 
-                    defaultMessage: 'Error loading profile' 
+                    defaultMessage: 'Error al cargar el perfil' 
                 }));
             } finally {
                 setLoading(false);
@@ -84,7 +79,7 @@ const Profile: React.FC = () => {
                 <div className="error-message">
                     {error || intl.formatMessage({ 
                         id: 'profile.error.generic', 
-                        defaultMessage: 'An error has occurred' 
+                        defaultMessage: 'Ha ocurrido un error' 
                     })}
                 </div>
             </div>
@@ -97,7 +92,7 @@ const Profile: React.FC = () => {
             <div className="profile-header">
                 <div className="profile-avatar">
                     {profileData.user.avatar ? (
-                        <img src={profileData.user.avatar} alt={intl.formatMessage({ id: 'profile.avatar', defaultMessage: 'User avatar' })} />
+                        <img src={profileData.user.avatar} alt={intl.formatMessage({ id: 'profile.avatar', defaultMessage: 'Avatar del usuario' })} />
                     ) : (
                         <FontAwesomeIcon icon={faUser} className="default-avatar" />
                     )}
@@ -115,21 +110,14 @@ const Profile: React.FC = () => {
                     onClick={() => setActiveTab('stats')}
                 >
                     <FontAwesomeIcon icon={faChartLine} />
-                    <span>{intl.formatMessage({ id: 'profile.nav.stats', defaultMessage: 'Statistics' })}</span>
+                    <span>{intl.formatMessage({ id: 'profile.nav.stats', defaultMessage: 'Estadísticas' })}</span>
                 </button>
                 <button 
                     className={`nav-button ${activeTab === 'achievements' ? 'active' : ''}`}
                     onClick={() => setActiveTab('achievements')}
                 >
                     <FontAwesomeIcon icon={faTrophy} />
-                    <span>{intl.formatMessage({ id: 'profile.nav.achievements', defaultMessage: 'Achievements' })}</span>
-                </button>
-                <button 
-                    className={`nav-button ${activeTab === 'rankings' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('rankings')}
-                >
-                    <FontAwesomeIcon icon={faMedal} />
-                    <span>{intl.formatMessage({ id: 'profile.nav.rankings', defaultMessage: 'Rankings' })}</span>
+                    <span>{intl.formatMessage({ id: 'profile.nav.achievements', defaultMessage: 'Logros' })}</span>
                 </button>
             </div>
 
@@ -143,23 +131,6 @@ const Profile: React.FC = () => {
 
                 {activeTab === 'achievements' && (
                     <Achievements achievements={profileData.stats.achievements} />
-                )}
-
-                {activeTab === 'rankings' && (
-                    <div className="rankings-container">
-                        {profileData.rankings.map((ranking, index) => (
-                            <div key={index} className="ranking-card">
-                                <h3>{intl.formatMessage({ 
-                                    id: `profile.ranking.${ranking.period}`,
-                                    defaultMessage: ranking.period.charAt(0).toUpperCase() + ranking.period.slice(1)
-                                })}</h3>
-                                <div className="ranking-info">
-                                    <span className="rank">#{ranking.rank}</span>
-                                    <span className="score">{ranking.score} {intl.formatMessage({ id: 'profile.stats.points', defaultMessage: 'points' })}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
                 )}
             </div>
         </div>

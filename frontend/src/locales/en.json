@@ -104,7 +104,13 @@
       "generalMetrics": "General Metrics",
       "pointsDistribution": "Points Distribution",
       "values": "Values",
-      "points": "points"
+      "points": "points",
+      "categoryPerformance": "Performance by Category",
+      "categories": "Categories",
+      "totalQuestions": "Total Questions",
+      "difficultyPerformance": "Performance by Difficulty",
+      "difficulties": "Difficulties",
+      "avgResponseTime": "Average Response Time"
     },
     "achievements": {
       "title": "Unlocked Achievements",
@@ -115,7 +121,8 @@
       "weekly": "Weekly",
       "monthly": "Monthly",
       "all_time": "All Time"
-    }
+    },
+    "avatar": "User avatar"
   },
   
   "about.title": "About Triviality",
@@ -184,5 +191,41 @@
   "language.tr": "Turkish", 
   "language.uk": "Ukrainian", 
   "language.ur": "Urdu", 
-  "language.vi": "Vietnamese"
+  "language.vi": "Vietnamese",
+  "leaderboard.period.daily": "Today",
+  "leaderboard.period.weekly": "This week",
+  "leaderboard.period.monthly": "This month",
+  "leaderboard.period.allTime": "All time",
+  "leaderboard.filter.all": "All categories",
+  "leaderboard.level": "Level {level}",
+  "leaderboard.yourRanking": "Your Position",
+  "leaderboard.totalPlayers": "of {total} players",
+  "leaderboard.error.loading": "Error loading leaderboard",
+  "profile.stats.categoryPerformance": "Performance by Category",
+  "profile.stats.categories": "Categories",
+  "profile.stats.values": "Values",
+  "profile.stats.totalQuestions": "Total Questions",
+  "profile.stats.correctAnswers": "Correct Answers",
+  "profile.stats.accuracy": "Accuracy",
+  "profile.stats.difficultyPerformance": "Performance by Difficulty",
+  "profile.stats.difficulties": "Difficulties",
+  "profile.stats.points": "points",
+  "profile.stats.avgTime": "Average Time",
+  "profile.stats.pointsPerGame": "Points per Game",
+  "profile.stats.performance": "Performance",
+  "profile.stats.pointsEarned": "Points Earned",
+  "profile.stats.remainingPoints": "Remaining Points",
+  "profile.stats.generalMetrics": "General Metrics",
+  "profile.stats.pointsDistribution": "Points Distribution",
+  "profile.level": "Level {level}",
+  "profile.xpProgress": "{current} / {total} XP",
+  "profile.stats.totalGames": "Total Games",
+  "profile.stats.totalPoints": "Total Points",
+  "profile.stats.avgResponseTime": "Average Response Time",
+  "profile.error.loading": "Error loading profile",
+  "profile.error.generic": "An error has occurred",
+  "profile.avatar": "User avatar",
+  "profile.nav.stats": "Statistics",
+  "profile.nav.achievements": "Achievements",
+  "profile.nav.rankings": "Rankings"
 } 

@@ -187,6 +187,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: auto;
+    min-width: 200px;
 }
 
 .button.primary {
@@ -206,6 +208,8 @@
     background: transparent;
     color: var(--color-red-medium);
     border: 2px solid var(--color-red-medium);
+    white-space: nowrap;
+    text-align: center;
 }
 
 .button.secondary:hover {
@@ -256,32 +260,35 @@
     }
 }
 
-@media (max-width: 768px) {
+/* Media queries para móvil */
+@media screen and (max-width: 768px) {
     .score-container {
-        margin: 1rem;
-        padding: 1.5rem;
+        margin: 1rem 0.75rem;
+        padding: 1.25rem;
+        width: calc(100% - 1.5rem);
+        box-sizing: border-box;
+    }
+
+    .score-container h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
     }
 
     .score-summary {
         grid-template-columns: 1fr;
-    }
-
-    .score-actions {
-        flex-direction: column;
-    }
-
-    .button {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .score-container h2 {
-        font-size: 1.5rem;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
     }
 
     .score-item {
         padding: 1rem;
+        margin: 0 0.5rem;
+    }
+
+    .score-label {
+        font-size: 0.8rem;
     }
 
     .score-value {
@@ -289,10 +296,159 @@
     }
 
     .experience-summary {
-        padding: 1.5rem;
+        padding: 1.25rem;
+        margin: 1.5rem 0.5rem 0;
+        width: calc(100% - 1rem);
+        box-sizing: border-box;
+    }
+
+    .experience-summary h3 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .experience-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
     }
 
     .experience-item {
         padding: 0.75rem;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .experience-label {
+        font-size: 0.9rem;
+    }
+
+    .experience-value {
+        font-size: 1rem;
+    }
+
+    .level-up-notification {
+        margin: 1rem 0.5rem 0;
+        padding: 1.25rem;
+    }
+
+    .level-up-notification h3 {
+        font-size: 1.1rem;
+    }
+
+    .button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        min-width: unset;
+        width: 100%;
+        margin: 0;
+    }
+
+    .button.secondary {
+        width: auto;
+        min-width: 200px;
+        max-width: 100%;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+        margin: 0 auto;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .score-actions {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0;
+        margin-top: 1.5rem;
+        width: 100%;
+        align-items: center;
+    }
+
+    .score-actions button,
+    .score-actions a {
+        width: auto;
+        margin: 0;
+    }
+}
+
+/* Media queries para móvil pequeño */
+@media screen and (max-width: 480px) {
+    .score-container {
+        margin: 0.75rem 0.5rem;
+        padding: 1rem;
+        width: calc(100% - 1rem);
+    }
+
+    .score-container h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+        padding: 0 0.25rem;
+    }
+
+    .score-item {
+        padding: 0.75rem;
+        margin: 0 0.25rem;
+    }
+
+    .score-label {
+        font-size: 0.75rem;
+    }
+
+    .score-value {
+        font-size: 1.25rem;
+    }
+
+    .experience-summary {
+        padding: 1rem;
+        margin: 1.25rem 0.25rem 0;
+        width: calc(100% - 0.5rem);
+    }
+
+    .experience-summary h3 {
+        font-size: 1.1rem;
+        padding: 0 0.25rem;
+    }
+
+    .experience-item {
+        padding: 0.5rem;
+        margin: 0;
+    }
+
+    .experience-label {
+        font-size: 0.8rem;
+    }
+
+    .experience-value {
+        font-size: 0.9rem;
+    }
+
+    .level-up-notification {
+        margin: 1rem 0.25rem 0;
+        padding: 1rem;
+    }
+
+    .score-actions {
+        padding: 0;
+    }
+
+    .score-actions button,
+    .score-actions a {
+        margin: 0;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .button {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .button.secondary {
+        min-width: 180px;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
     }
 } 

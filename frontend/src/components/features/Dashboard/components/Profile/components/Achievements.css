@@ -122,4 +122,50 @@
     .achievement-info p {
         font-size: 0.9rem;
     }
+}
+
+.achievements-container {
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+}
+
+.coming-soon-message {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.coming-soon-message h3 {
+    color: var(--color-red-medium);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.coming-soon-message p {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .achievements-container {
+        padding: 1rem;
+    }
+
+    .coming-soon-message {
+        padding: 2rem 1.5rem;
+    }
+
+    .coming-soon-message h3 {
+        font-size: 1.3rem;
+    }
+
+    .coming-soon-message p {
+        font-size: 1rem;
+    }
 } 

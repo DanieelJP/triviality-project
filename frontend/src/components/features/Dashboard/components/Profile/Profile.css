@@ -224,162 +224,67 @@
     font-weight: 600;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
+/* Media Queries para móvil */
+@media (max-width: 768px) {
     .profile-container {
-        padding: 1rem;
+        padding: 0;
         padding-top: calc(70px + 1rem);
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
     }
 
     .profile-header {
         flex-direction: column;
         text-align: center;
-        gap: 1rem;
         padding: 1.25rem;
-        margin-top: 40px;
-        width: 98%;
-    }
-
-    .profile-nav {
-        width: 98%;
-        padding: 0.5rem;
-    }
-
-    .nav-button {
-        width: calc(50% - 0.5rem);
-        justify-content: center;
-        padding: 0.75rem;
-        font-size: 0.85rem;
-    }
-
-    .profile-content {
-        width: 98%;
-        padding: 1.25rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .profile-container {
-        padding: 0.5rem;
-        padding-top: calc(70px + 0.5rem);
-    }
-
-    .profile-header {
-        padding: 1rem;
-        margin-top: 30px;
-        margin-bottom: 1rem;
-        width: 100%;
-    }
-
-    .profile-avatar {
-        width: 60px;
-        height: 60px;
-    }
-
-    .profile-avatar .default-avatar {
-        font-size: 1.5rem;
-    }
-
-    .profile-info h2 {
-        font-size: 1.25rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .profile-nav {
-        padding: 0.5rem;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        width: 100%;
-    }
-
-    .nav-button {
-        width: 100%;
-        padding: 0.5rem;
-        font-size: 0.8rem;
-    }
-
-    .nav-button svg {
-        font-size: 0.9rem;
-    }
-
-    .profile-content {
-        padding: 1rem;
-        width: 100%;
-    }
-
-    .ranking-card {
-        padding: 1.25rem;
-    }
-
-    .ranking-info {
-        font-size: 1.25rem;
-        gap: 1rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .profile-container {
-        width: 100%;
-        min-height: 100vh;
-        padding: 0;
-        padding-top: calc(70px + 1rem);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .profile-header {
-        width: 100%;
-        margin: 0 1rem 1.5rem 1rem;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        border-radius: 0.75rem;
+        margin: 0 0.75rem 1rem 0.75rem;
+        width: calc(100% - 1.5rem);
+        max-width: none;
         box-sizing: border-box;
     }
 
     .profile-avatar {
         width: 90px;
         height: 90px;
-        margin: 0;
+        margin: 0 auto 0.75rem auto;
     }
 
     .profile-info {
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
+        text-align: center;
+        padding-top: 0;
     }
 
     .profile-info h2 {
-        font-size: 1.6rem;
-        margin: 0;
-        text-align: center;
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
     }
 
     .profile-nav {
-        width: 100%;
-        margin: 0 1rem 1.5rem 1rem;
-        padding: 1rem;
-        display: flex;
+        flex-direction: row;
         justify-content: space-between;
-        gap: 0.5rem;
-        border-radius: 0.75rem;
-        overflow-x: auto;
+        padding: 0.6rem;
+        margin: 0 0.75rem 1rem 0.75rem;
+        width: calc(100% - 1.5rem);
+        max-width: none;
         box-sizing: border-box;
     }
 
     .nav-button {
         flex: 1;
-        min-width: auto;
-        padding: 0.75rem;
-        display: flex;
-        align-items: center;
         justify-content: center;
+        padding: 0.6rem;
+        font-size: 0.9rem;
+        margin: 0 0.2rem;
+    }
+
+    .nav-button:first-child {
+        margin-left: 0;
+    }
+
+    .nav-button:last-child {
+        margin-right: 0;
     }
 
     .nav-button span {
@@ -387,80 +292,51 @@
     }
 
     .nav-button svg {
-        margin: 0;
         font-size: 1.25rem;
+        margin: 0;
     }
 
     .profile-content {
-        width: 100%;
-        margin: 0 1rem 1.5rem 1rem;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
+        margin: 0 0.75rem 1rem 0.75rem;
+        padding: 1.25rem;
+        width: calc(100% - 1.5rem);
+        max-width: none;
         box-sizing: border-box;
-    }
-
-    .stats-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .rankings-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 0;
-    }
-
-    .ranking-card {
-        margin: 0.5rem 0;
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .achievements-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 0;
-    }
-
-    .achievement-card {
-        margin: 0.5rem 0;
-        padding: 1.25rem;
     }
 }
 
+/* Media Queries para móvil pequeño */
 @media (max-width: 480px) {
     .profile-container {
-        padding: 0;
         padding-top: calc(70px + 0.75rem);
-        gap: 1rem;
     }
 
     .profile-header {
-        margin: 0 0.75rem 1rem 0.75rem;
-        padding: 1.25rem;
+        padding: 1rem;
+        margin: 0 0.5rem 0.75rem 0.5rem;
+        width: calc(100% - 1rem);
     }
 
     .profile-avatar {
         width: 80px;
         height: 80px;
+        margin-bottom: 0.5rem;
     }
 
     .profile-info h2 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
     }
 
     .profile-nav {
-        margin: 0 0.75rem 1rem 0.75rem;
-        padding: 0.75rem;
+        margin: 0 0.5rem 0.75rem 0.5rem;
+        padding: 0.5rem;
+        width: calc(100% - 1rem);
     }
 
     .nav-button {
-        padding: 0.6rem;
+        padding: 0.5rem;
+        margin: 0 0.15rem;
     }
 
     .nav-button svg {
@@ -468,13 +344,40 @@
     }
 
     .profile-content {
-        margin: 0 0.75rem 1rem 0.75rem;
-        padding: 1.25rem;
+        margin: 0 0.5rem 0.75rem 0.5rem;
+        padding: 1rem;
+        width: calc(100% - 1rem);
+    }
+}
+
+/* Media Queries para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .profile-container {
+        padding: 1rem;
+        padding-top: calc(70px + 1.5rem);
     }
 
-    .ranking-card,
-    .achievement-card {
-        margin: 0.25rem 0;
-        padding: 1rem;
+    .profile-header {
+        width: 90%;
+        padding: 1.25rem;
+        margin: 0 auto 1.25rem auto;
+    }
+
+    .profile-nav {
+        width: 90%;
+        margin: 0 auto 1.25rem auto;
+    }
+
+    .profile-content {
+        width: 90%;
+        margin: 0 auto 1.25rem auto;
+    }
+}
+
+/* Media Queries para pantallas grandes */
+@media (min-width: 1025px) {
+    .profile-container {
+        padding: 2rem;
+        padding-top: calc(70px + 2rem);
     }
 } 

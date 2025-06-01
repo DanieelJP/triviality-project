@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Leaderboard;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -50,79 +49,131 @@ class LeaderboardService
     }
 
     /**
-     * Obtiene la fecha de inicio para un período
-     */
-    private function getPeriodStartDate(string $period): Carbon
-    {
-        $now = Carbon::now();
-        
-        switch ($period) {
-            case 'daily':
-                return $now->startOfDay();
-            case 'weekly':
-                return $now->startOfWeek();
-            case 'monthly':
-                return $now->startOfMonth();
-            default: // all_time
-                return Carbon::createFromTimestamp(0);
-        }
-    }
-
-    /**
      * Obtiene el ranking para un período y categoría específicos
      */
-    public function getRanking(string $period, ?string $category = null, int $limit = 10)
+    public function getRanking(string $period = 'all_time', ?string $category = null, int $limit = 10)
     {
-        $startDate = $this->getPeriodStartDate($period);
-        
-        return DB::table('leaderboards')
-            ->join('users', 'leaderboards.user_id', '=', 'users.id')
-            ->where('leaderboards.period', $period)
-            ->where('leaderboards.category', $category)
-            ->where('leaderboards.updated_at', '>=', $startDate)
-            ->select(
-                'users.name',
-                'users.avatar',
-                'leaderboards.score',
-                DB::raw('RANK() OVER (ORDER BY leaderboards.score DESC) as rank')
-            )
-            ->orderBy('leaderboards.score', 'desc')
+        $query = User::select([
+            'users.id',
+            'users.name',
+            'users.avatar',
+            'users.level',
+            DB::raw('COUNT(DISTINCT games.id) as total_games'),
+            DB::raw('SUM(games.total_points) as score'),
+            DB::raw('AVG(games.avg_response_time) as avg_response_time'),
+            DB::raw('(SUM(games.correct_answers) * 100.0 / NULLIF(SUM(games.total_questions), 0)) as accuracy')
+        ])
+        ->leftJoin('games', 'users.id', '=', 'games.user_id');
+
+        // Filtrar por período
+        if ($period !== 'all_time') {
+            $startDate = $this->getPeriodStartDate($period);
+            $query->where('games.created_at', '>=', $startDate);
+        }
+
+        // Filtrar por categoría
+        if ($category) {
+            $query->where('games.category', $category);
+        }
+
+        $ranking = $query->groupBy('users.id', 'users.name', 'users.avatar', 'users.level')
+            ->having('total_games', '>', 0)
+            ->orderBy('score', 'desc')
             ->limit($limit)
             ->get();
+
+        // Añadir el rank a cada usuario
+        return $ranking->map(function ($user, $index) {
+            $user->rank = $index + 1;
+            return $user;
+        });
     }
 
     /**
      * Obtiene la posición del usuario en el ranking
      */
-    public function getUserRanking(User $user, string $period, ?string $category = null)
+    public function getUserRanking(User $user, string $period = 'all_time', ?string $category = null)
     {
-        $startDate = $this->getPeriodStartDate($period);
-        
-        $userScore = Leaderboard::where('user_id', $user->id)
-            ->where('period', $period)
-            ->where('category', $category)
-            ->where('updated_at', '>=', $startDate)
+        $query = User::select([
+            'users.id',
+            DB::raw('COUNT(DISTINCT games.id) as total_games'),
+            DB::raw('SUM(games.total_points) as score'),
+            DB::raw('AVG(games.avg_response_time) as avg_response_time'),
+            DB::raw('(SUM(games.correct_answers) * 100.0 / NULLIF(SUM(games.total_questions), 0)) as accuracy')
+        ])
+        ->leftJoin('games', 'users.id', '=', 'games.user_id');
+
+        if ($period !== 'all_time') {
+            $startDate = $this->getPeriodStartDate($period);
+            $query->where('games.created_at', '>=', $startDate);
+        }
+
+        if ($category) {
+            $query->where('games.category', $category);
+        }
+
+        $userStats = $query->where('users.id', $user->id)
+            ->groupBy('users.id')
             ->first();
 
-        if (!$userScore) {
+        if (!$userStats || $userStats->total_games === 0) {
             return null;
         }
 
-        $rank = DB::table('leaderboards')
-            ->where('period', $period)
-            ->where('category', $category)
-            ->where('updated_at', '>=', $startDate)
-            ->where('score', '>', $userScore->score)
-            ->count() + 1;
+        // Calcular el rank del usuario
+        $betterPlayers = User::select('users.id')
+            ->leftJoin('games', 'users.id', '=', 'games.user_id')
+            ->where(function ($query) use ($period, $category) {
+                if ($period !== 'all_time') {
+                    $startDate = $this->getPeriodStartDate($period);
+                    $query->where('games.created_at', '>=', $startDate);
+                }
+                if ($category) {
+                    $query->where('games.category', $category);
+                }
+            })
+            ->groupBy('users.id')
+            ->having(DB::raw('SUM(games.total_points)'), '>', $userStats->score)
+            ->count();
+
+        // Contar el total de jugadores
+        $totalPlayers = User::select('users.id')
+            ->leftJoin('games', 'users.id', '=', 'games.user_id')
+            ->where(function ($query) use ($period, $category) {
+                if ($period !== 'all_time') {
+                    $startDate = $this->getPeriodStartDate($period);
+                    $query->where('games.created_at', '>=', $startDate);
+                }
+                if ($category) {
+                    $query->where('games.category', $category);
+                }
+            })
+            ->groupBy('users.id')
+            ->having(DB::raw('COUNT(DISTINCT games.id)'), '>', 0)
+            ->count();
 
         return [
-            'rank' => $rank,
-            'score' => $userScore->score,
-            'total_players' => Leaderboard::where('period', $period)
-                ->where('category', $category)
-                ->where('updated_at', '>=', $startDate)
-                ->count()
+            'rank' => $betterPlayers + 1,
+            'score' => $userStats->score,
+            'total_games' => $userStats->total_games,
+            'accuracy' => round($userStats->accuracy, 2),
+            'avg_response_time' => round($userStats->avg_response_time, 2),
+            'total_players' => $totalPlayers
         ];
+    }
+
+    /**
+     * Obtiene la fecha de inicio para un período
+     */
+    private function getPeriodStartDate(string $period): Carbon
+    {
+        $now = Carbon::now();
+        return match ($period) {
+            'daily' => $now->startOfDay(),
+            'weekly' => $now->startOfWeek(),
+            'monthly' => $now->startOfMonth(),
+            default => Carbon::createFromTimestamp(0)
+        };
     }
 
     /**

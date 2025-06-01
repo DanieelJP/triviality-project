@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Services\LeaderboardService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class LeaderboardController extends Controller
 {
-    private $leaderboardService;
+    protected LeaderboardService $leaderboardService;
 
     public function __construct(LeaderboardService $leaderboardService)
     {
@@ -18,41 +19,36 @@ class LeaderboardController extends Controller
     /**
      * Obtiene el ranking general o por categoría
      */
-    public function getRanking(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $request->validate([
-            'period' => 'required|in:daily,weekly,monthly,all_time',
-            'category' => 'nullable|string',
-            'limit' => 'nullable|integer|min:1|max:100'
-        ]);
-
-        $period = $request->input('period');
-        $category = $request->input('category');
-        $limit = $request->input('limit', 10);
+        $period = $request->query('period', 'all_time');
+        $category = $request->query('category');
+        $limit = $request->query('limit', 10);
 
         $ranking = $this->leaderboardService->getRanking($period, $category, $limit);
-        $userRanking = $this->leaderboardService->getUserRanking(Auth::user(), $period, $category);
 
-        return response()->json([
-            'ranking' => $ranking,
-            'user_ranking' => $userRanking
-        ]);
+        return response()->json($ranking);
     }
 
     /**
-     * Obtiene el ranking del usuario actual
+     * Obtiene la posición del usuario autenticado en el ranking
      */
-    public function getUserRanking(Request $request)
+    public function userRanking(Request $request): JsonResponse
     {
-        $request->validate([
-            'period' => 'required|in:daily,weekly,monthly,all_time',
-            'category' => 'nullable|string'
-        ]);
+        $period = $request->query('period', 'all_time');
+        $category = $request->query('category');
+        
+        $ranking = $this->leaderboardService->getUserRanking(
+            $request->user(),
+            $period,
+            $category
+        );
 
-        $period = $request->input('period');
-        $category = $request->input('category');
-
-        $ranking = $this->leaderboardService->getUserRanking(Auth::user(), $period, $category);
+        if (!$ranking) {
+            return response()->json([
+                'message' => 'No ranking data available for this user'
+            ], 404);
+        }
 
         return response()->json($ranking);
     }

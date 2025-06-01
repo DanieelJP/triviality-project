@@ -55,6 +55,18 @@
   "profile.ranking.weekly": "Setmanal",
   "profile.ranking.monthly": "Mensual",
   "profile.ranking.all_time": "Total",
+  "profile.stats.performanceMetrics": "Mètriques de Rendiment",
+  "profile.stats.recentGames": "Últimes Partides",
+  "profile.stats.pointsDistribution": "Distribució de Punts",
+  "profile.stats.accuracy": "Precisió",
+  "profile.stats.avgTime": "Temps Mitjà",
+  "profile.stats.points": "punts",
+  "profile.stats.performance": "Rendiment",
+  "profile.stats.pointsEarned": "Punts Guanyats",
+  "profile.stats.remainingPoints": "Punts Restants",
+  "profile.stats.potentialPoints": "Punts Potencials",
+  "profile.stats.values": "Valors",
+  "profile.stats.gameNumber": "Partida {number}",
 
   "difficulty.easy": "Fàcil",
   "difficulty.medium": "Mitjana",
@@ -351,7 +363,27 @@
       "generalMetrics": "Mètriques Generals",
       "pointsDistribution": "Distribució de Punts",
       "values": "Valors",
-      "points": "punts"
+      "points": "punts",
+      "categoryPerformance": "Rendiment per Categoria",
+      "categories": "Categories",
+      "totalQuestions": "Total de Preguntes",
+      "difficultyPerformance": "Rendiment per Dificultat",
+      "difficulties": "Dificultats",
+      "avgResponseTime": "Temps Mitjà de Resposta",
+      "totalGames": "Total de Jocs",
+      "totalPoints": "Total de Punts",
+      "performanceMetrics": "Mètriques de Rendiment",
+      "recentGames": "Últimes Partides",
+      "pointsDistribution": "Distribució de Punts",
+      "accuracy": "Precisió",
+      "avgTime": "Temps Mitjà",
+      "points": "punts",
+      "performance": "Rendiment",
+      "pointsEarned": "Punts Guanyats",
+      "remainingPoints": "Punts Restants",
+      "potentialPoints": "Punts Potencials",
+      "values": "Valors",
+      "gameNumber": "Partida {number}"
     },
     "achievements": {
       "title": "Assoliments Desbloquejats",
@@ -362,6 +394,7 @@
       "weekly": "Setmanal",
       "monthly": "Mensual",
       "all_time": "Total"
-    }
+    },
+    "avatar": "Avatar de l'usuari"
   }
 } 
