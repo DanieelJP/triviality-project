@@ -1,7 +1,7 @@
 # Triviality Project
 
 ## Descripción
-Triviality es un juego de preguntas y respuestas basado en la API Open Trivia Database. El proyecto utiliza Laravel para el backend y React para el frontend.
+Triviality es un juego de preguntas y respuestas basado en la API Open Trivia Database. El proyecto utiliza Laravel para el backend y React con Vite para el frontend.
 
 ## Requisitos Previos
 
@@ -42,8 +42,6 @@ Este script realizará todas las siguientes tareas automáticamente:
 > - Crear la base de datos y el usuario si no existen
 > - Confirmar si deseas iniciar los servicios automáticamente
 
-Para una configuración manual paso a paso, sigue las instrucciones detalladas a continuación.
-
 ## Configuración Manual del Entorno
 
 ### 1. Backend (Laravel)
@@ -67,15 +65,6 @@ php artisan key:generate
 # DB_USERNAME=triviality_user
 # DB_PASSWORD=
 
-# El script de configuración te guiará para crear la base de datos
-# y configurar un usuario con los permisos necesarios.
-
-# Crear base de datos (alternativa manual)
-# mysql -u root -p -e "CREATE DATABASE triviality;"
-# mysql -u root -p -e "CREATE USER 'triviality_user'@'localhost' IDENTIFIED BY 'tu_contraseña';"
-# mysql -u root -p -e "GRANT ALL PRIVILEGES ON triviality.* TO 'triviality_user'@'localhost';"
-# mysql -u root -p -e "FLUSH PRIVILEGES;"
-
 # Migrar base de datos
 php artisan migrate
 
@@ -83,7 +72,7 @@ php artisan migrate
 php artisan serve
 ```
 
-### 2. Frontend (React)
+### 2. Frontend (React + Vite)
 
 ```bash
 # Entrar al directorio frontend
@@ -93,7 +82,7 @@ cd frontend
 npm install
 
 # Iniciar servidor de desarrollo
-npm start
+npm run dev
 ```
 
 ### 3. Instalar Servicio de Traducción Local (LibreTranslate)
@@ -118,26 +107,6 @@ Una vez configurado, el servicio estará disponible en:
 
 > **Nota importante**: La primera vez que se inicia LibreTranslate, descargará los modelos de idioma necesarios, lo que puede tardar varios minutos. Durante este tiempo, el servicio no estará completamente operativo.
 
-### 4. Verificar Instalación y Servicios
-Para verificar que todos los servicios estén funcionando correctamente, se proporciona un script de verificación:
-
-```bash
-# Ejecutar el script de verificación de servicios
-cd /var/www/html/triviality-project
-chmod +x scripts/check-services.sh
-./scripts/check-services.sh
-```
-
-Este script verificará:
-1. La instalación de Docker
-2. El estado del contenedor LibreTranslate
-3. La disponibilidad de la API de traducción
-4. El estado del servidor Laravel
-5. La disponibilidad de la API de Laravel
-6. El estado del servidor React
-
-Si algún servicio no está funcionando correctamente, el script proporcionará recomendaciones para solucionarlo.
-
 ## Flujo de Trabajo
 
 ### Desarrollo
@@ -145,9 +114,9 @@ Si algún servicio no está funcionando correctamente, el script proporcionará 
    ```bash
    cd backend && php artisan serve
    ```
-2. Inicia el servidor React:
+2. Inicia el servidor Vite:
    ```bash
-   cd frontend && npm start
+   cd frontend && npm run dev
    ```
 3. Verifica que el servicio de traducción esté funcionando:
    ```bash
@@ -155,7 +124,7 @@ Si algún servicio no está funcionando correctamente, el script proporcionará 
    ```
 4. Accede a la aplicación:
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/api
+   - Backend API: http://localhost:8000
    - Traductor: http://localhost:5000
 
 Los cambios se actualizarán automáticamente (hot reload). No necesitas ejecutar `npm run build` para ver los cambios.
@@ -175,91 +144,56 @@ Los cambios se actualizarán automáticamente (hot reload). No necesitas ejecuta
    docker ps | grep libretranslate
    ```
 
-## Configuración Alternativa con Apache VirtualHost (Opcional)
+## Estructura del Proyecto
 
-Si prefieres usar Apache como proxy para los servidores de desarrollo, sigue estos pasos adicionales:
-
-```bash
-# Habilitar módulos necesarios
-sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
-
-# Configurar VirtualHost
-sudo nano /etc/apache2/sites-available/triviality.conf
+```
+triviality-project/
+├── backend/                  # Aplicación Laravel
+│   ├── app/
+│   │   ├── Http/
+│   │   │   ├── Controllers/  # Controladores de la API
+│   │   │   └── Middleware/   # Middleware de autenticación
+│   │   └── Models/          # Modelos de la base de datos
+│   ├── config/              # Configuración de Laravel
+│   ├── database/            # Migraciones y seeders
+│   └── routes/              # Rutas de la API
+├── frontend/                # Aplicación React + Vite
+│   ├── src/
+│   │   ├── components/      # Componentes React
+│   │   ├── pages/          # Páginas de la aplicación
+│   │   ├── services/       # Servicios de API
+│   │   └── App.tsx         # Componente principal
+│   └── package.json        # Dependencias de React
+├── scripts/                 # Scripts de configuración
+│   ├── setup-translator.sh  # Script de instalación del traductor
+│   ├── check-services.sh    # Script de verificación de servicios
+│   └── setup-all.sh        # Script de configuración completa
+└── .env                    # Variables de entorno
 ```
 
-### Configuración para Desarrollo
-```apache
-<VirtualHost *:80>
-    ServerName triviality.local
-    
-    # Proxy para el frontend en modo desarrollo
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
+## Endpoints de la API
 
-    # Proxy para el backend
-    ProxyPass /api http://localhost:8000/api
-    ProxyPassReverse /api http://localhost:8000/api
+### Autenticación
+- `POST /api/auth/register` - Registro de usuarios
+- `POST /api/auth/login` - Inicio de sesión
+- `POST /api/auth/logout` - Cierre de sesión
 
-    # WebSocket para Hot Module Replacement
-    RewriteEngine On
-    RewriteCond %{HTTP:Upgrade} =websocket [NC]
-    RewriteRule /(.*)           ws://localhost:3000/$1 [P,L]
-    
-    # Logs
-    ErrorLog ${APACHE_LOG_DIR}/triviality-error.log
-    CustomLog ${APACHE_LOG_DIR}/triviality-access.log combined
-</VirtualHost>
-```
-
-### Configuración para Producción
-```apache
-<VirtualHost *:80>
-    ServerName triviality.local
-    DocumentRoot /var/www/html/triviality-project/frontend/build
-
-    # Configuración del frontend
-    <Directory /var/www/html/triviality-project/frontend/build>
-        Options Indexes FollowSymLinks
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    # Proxy para el backend
-    ProxyPass /api http://localhost:8000/api
-    ProxyPassReverse /api http://localhost:8000/api
-
-    # Logs
-    ErrorLog ${APACHE_LOG_DIR}/triviality-error.log
-    CustomLog ${APACHE_LOG_DIR}/triviality-access.log combined
-</VirtualHost>
-```
-
-Si usas esta configuración, añade el dominio local:
-```bash
-# Añadir dominio local
-sudo nano /etc/hosts
-# Añadir: 127.0.0.1 triviality.local
-```
-
-Y habilita el sitio:
-```bash
-# Habilitar sitio y reiniciar Apache
-sudo a2ensite triviality.conf
-sudo systemctl restart apache2
-```
-
-> **Nota**: Los scripts de configuración automática NO configuran VirtualHost. Esta es una opción avanzada manual.
+### Trivia
+- `GET /api/trivia/questions` - Obtiene preguntas de trivia (traducidas)
+- `GET /api/trivia/categories` - Obtiene las categorías de trivia
 
 ## Solución de Problemas
 
-### Error "Missing script: dev"
-El proyecto utiliza `npm start` en lugar de `npm run dev` para el servidor de desarrollo.
-
-### Cambios no visibles en desarrollo
-Verifica que:
-- El servidor Laravel esté corriendo (`php artisan serve`).
-- El servidor React esté corriendo (`npm start`).
-- Si usas Apache como proxy, verifica que esté configurado correctamente.
+### Error "ERR_CONNECTION_REFUSED"
+Si ves este error al intentar registrar o iniciar sesión:
+1. Verifica que el servidor Laravel esté corriendo:
+   ```bash
+   ps aux | grep "php artisan serve"
+   ```
+2. Si no está corriendo, inicia el servidor:
+   ```bash
+   cd backend && php artisan serve
+   ```
 
 ### Problemas con el servicio de traducción
 Si las traducciones no funcionan correctamente:
@@ -267,7 +201,6 @@ Si las traducciones no funcionan correctamente:
 2. Revisa los logs del contenedor: `docker logs libretranslate`
 3. Reinicia el contenedor si es necesario: `docker restart libretranslate`
 4. Verifica si puedes acceder a la interfaz web: http://localhost:5000
-5. Ejecuta el script de configuración nuevamente: `./scripts/setup-translator.sh`
 
 ### Problemas con permisos
 Si experimentas problemas con permisos en la carpeta del proyecto:
@@ -277,52 +210,12 @@ sudo chown -R $USER:www-data /var/www/html/triviality-project
 sudo chmod -R 775 /var/www/html/triviality-project
 ```
 
-### Apache no se reinicia
-Para verificar errores en Apache:
-
-```bash
-sudo systemctl status apache2
-sudo tail -f /var/log/apache2/error.log
-```
-
 ## Tecnologías Utilizadas
 
 - **Backend**: Laravel, PHP, MySQL
-- **Frontend**: React, TypeScript, Axios
+- **Frontend**: React, TypeScript, Vite, Axios
 - **Traducción**: LibreTranslate (Docker), API local
-
-## Verificar Instalación
-
-- **Backend**: http://localhost:8000/api
-- **Frontend**: http://localhost:3000
-- **Traductor**: http://localhost:5000
-
-## Estructura del Proyecto
-
-```
-triviality-project/
-├── app/                      # Código de la aplicación Laravel
-├── config/                   # Archivos de configuración
-├── database/                 # Migraciones y seeders
-├── frontend/                 # Aplicación React
-│   ├── src/
-│   │   ├── components/       # Componentes React
-│   │   └── App.tsx           # Componente principal
-│   └── package.json          # Dependencias de React
-├── scripts/                  # Scripts de configuración
-│   ├── setup-translator.sh   # Script de instalación del traductor
-│   ├── check-services.sh     # Script de verificación de servicios
-│   ├── setup-all.sh          # Script de configuración completa
-│   └── start-libretranslate.sh # Script rápido para iniciar el traductor
-├── public/                   # Archivos públicos
-├── routes/                   # Rutas de la API
-└── .env                      # Variables de entorno
-```
-
-## Endpoints de la API
-
-- `GET /api/trivia/questions` - Obtiene preguntas de trivia (traducidas).
-- `GET /api/trivia/categories` - Obtiene las categorías de trivia.
+- **Autenticación**: Laravel Sanctum
 
 
 
