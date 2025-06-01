@@ -10,38 +10,65 @@ echo -e "${GREEN}Iniciando configuración del proyecto Triviality...${NC}"
 
 # Verificar si Docker está instalado
 if ! command -v docker &> /dev/null; then
-    echo -e "${RED}Docker no está instalado. Por favor, instala Docker primero.${NC}"
+    echo -e "${YELLOW}Docker no está instalado. Instalando...${NC}"
+    sudo apt-get update
+    sudo apt-get install -y docker.io
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker $USER
+    echo -e "${GREEN}Docker instalado correctamente${NC}"
+    echo -e "${YELLOW}Por favor, cierra sesión y vuelve a iniciar sesión para que los cambios surtan efecto${NC}"
     exit 1
 fi
 
 # Verificar si Docker Compose está instalado
 if ! command -v docker-compose &> /dev/null; then
-    echo -e "${RED}Docker Compose no está instalado. Por favor, instala Docker Compose primero.${NC}"
-    exit 1
+    echo -e "${YELLOW}Docker Compose no está instalado. Instalando...${NC}"
+    sudo apt-get update
+    sudo apt-get install -y docker-compose
+    echo -e "${GREEN}Docker Compose instalado correctamente${NC}"
 fi
 
 # Verificar si Node.js está instalado
 if ! command -v node &> /dev/null; then
-    echo -e "${RED}Node.js no está instalado. Por favor, instala Node.js primero.${NC}"
-    exit 1
+    echo -e "${YELLOW}Node.js no está instalado. Instalando...${NC}"
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    echo -e "${GREEN}Node.js instalado correctamente${NC}"
 fi
 
 # Verificar si npm está instalado
 if ! command -v npm &> /dev/null; then
-    echo -e "${RED}npm no está instalado. Por favor, instala npm primero.${NC}"
-    exit 1
+    echo -e "${YELLOW}npm no está instalado. Instalando...${NC}"
+    sudo apt-get install -y npm
+    echo -e "${GREEN}npm instalado correctamente${NC}"
 fi
 
 # Verificar si Composer está instalado
 if ! command -v composer &> /dev/null; then
-    echo -e "${RED}Composer no está instalado. Por favor, instala Composer primero.${NC}"
-    exit 1
+    echo -e "${YELLOW}Composer no está instalado. Instalando...${NC}"
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    php -r "unlink('composer-setup.php');"
+    echo -e "${GREEN}Composer instalado correctamente${NC}"
 fi
 
 # Verificar si MySQL está instalado
 if ! command -v mysql &> /dev/null; then
-    echo -e "${RED}MySQL no está instalado. Por favor, instala MySQL primero.${NC}"
-    exit 1
+    echo -e "${YELLOW}MySQL no está instalado. Instalando...${NC}"
+    sudo apt-get update
+    sudo apt-get install -y mysql-server
+    sudo systemctl start mysql
+    sudo systemctl enable mysql
+    echo -e "${GREEN}MySQL instalado correctamente${NC}"
+    
+    # Configurar contraseña de root
+    echo -e "${YELLOW}Configurando contraseña de root de MySQL...${NC}"
+    read -sp "Ingresa la contraseña de root para MySQL: " MYSQL_ROOT_PASSWORD
+    echo ""
+    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASSWORD';"
+    sudo mysql -e "FLUSH PRIVILEGES;"
+    echo -e "${GREEN}Contraseña de root configurada correctamente${NC}"
 fi
 
 echo -e "${GREEN}Verificando requisitos previos...${NC}"
